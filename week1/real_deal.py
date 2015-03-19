@@ -1,4 +1,6 @@
 from copy import deepcopy
+
+
 def sum_of_divisors(n):
     return sum([x for x in range(1, n+1) if n % x == 0])
 
@@ -55,9 +57,6 @@ def zero_insert(n):
 def sum_matrix(m):
     return sum(map(sum, m))
 
-#or row + 1 == pos[0] or row - 1 == pos[0] or row == pos[0]
-#col + 1 == pos[1] or col - 1 == pos[1] or col == pos[1]
-
 
 def bomb_da_shet(m, pos):
     tmp = deepcopy(m)
@@ -79,19 +78,10 @@ def matrix_bombing_plan(m):
     min_dict = {x: min_elem for x in dct.keys() if dct[x] == min_elem}
     return min_dict
 
-    #dct = {p: sum_matrix(bomb_da_shet(m, p)) for p in lstreturn dct
-
-
 
 def reps(input_items):
     return [x for x in input_items if input_items.count(x) != 1]
 
 
 if __name__ == '__main__':
-    #print(matrix_bombing_plan([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
-    #print(sum_matrix(bomb_da_shet([[0, 2, 1], [2, 3, 4], [7, 8, 9]], [0,2])))
-    #print(zero_insert(6446))
     print(reps([1, 4, 2, 6, 7, 2, 4, 11, 1, 9, 0, 2, 5, 3, 1]))
-
-
-
