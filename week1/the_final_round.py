@@ -169,20 +169,5 @@ def reduce_file_path(path):
     return "/"+"/".join(output)
 
 
-
-
-
-
-
-
-
-
-'''    length = len(splitted)
-    for i in range(length - 1):
-        if splitted[0] == '..' and len(set(splitted)) == 1:
-            return '/'
-        if splitted[i + 1] == '..':'''
-
-
 if __name__ == '__main__':
     print(reduce_file_path("/../"))
