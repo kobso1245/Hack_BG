@@ -169,5 +169,21 @@ def reduce_file_path(path):
     return "/"+"/".join(output)
 
 
+def start_day(n):
+    return (2 * ((n - 1) // 4) + (n + 1 - ((n - 1) // 4)) + 4) % 7
+
+
+def is_leap_year(year):
+    if year % 4 == 0:
+        return {3, 4}
+    else:
+        return {4}
+
+
+def friday_years(start, end):
+    return sum([1 for elem in [year for year in range(start, end + 1)
+               if start_day(year) in is_leap_year(year)]])
+
+
 if __name__ == '__main__':
-    print(reduce_file_path("/../"))
+    print(friday_years(1000, 2000))
