@@ -9,6 +9,6 @@ def main():
     for elem in tmp:
         sum += int(elem)
     print(sum)
-
+    in_file.close()
 if __name__ == '__main__':
     main()

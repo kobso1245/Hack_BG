@@ -6,6 +6,7 @@ def main():
         out = open(curr_file, 'r')
         print(out.read())
         print()
+        out.close()
 
 if __name__ == '__main__':
     main()

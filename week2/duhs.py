@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 def getSize(path):
     try:
         dirs = os.listdir(path)

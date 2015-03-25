@@ -9,6 +9,6 @@ def main():
         lst.append(str(randint(1, 1000)))
 
     out_file.write(" ".join(lst))
-
+    out_file.close()
 if __name__ == '__main__':
     main()
