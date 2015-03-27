@@ -1,10 +1,8 @@
 class Fraction:
     def __init__(self, numerator, denominator):
-        a = numerator
-        b = denominator
         den = 1
-        if a != 0:
-            den = gcd(a, b)
+        if numerator != 0:
+            den = gcd(numerator, denominator)
         if den == 1:
             self.numerator = numerator
             self.denominator = denominator
