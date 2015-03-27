@@ -66,8 +66,10 @@ class CashDesk:
         return out
 
     def inspect(self):
-        for elem in self.lst.keys():
-            print("{}$  - {}".format(elem, self.lst[elem]))
+        to_pairs = [(key, self.lst[key]) for key in self.lst.keys()]
+        to_pairs.sort()
+        for elem in to_pairs:
+            print("{}$  - {}".format(elem[0], elem[1]))
 
 
 if __name__ == '__main__':
