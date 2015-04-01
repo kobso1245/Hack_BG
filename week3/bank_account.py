@@ -94,3 +94,8 @@ class BankAccount:
 
     def history(self):
         return self.__history
+
+
+
+def tst():
+    return 42

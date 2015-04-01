@@ -1,5 +1,5 @@
 #!/bin/sh
-while inotifywait $1; do
+while inotifywait $1 || inotifywait panda_tester.py; do
     clear
-    python3 tester.py
+    python3 panda_tester.py
 done
