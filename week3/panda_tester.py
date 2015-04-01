@@ -1,101 +1,96 @@
 import unittest
 import re
 from panda_network import Panda, PandaSocialNetwork
+from panda_network import PandasAlreadyFriends, PandaAlreadyThere
 
 
 class PandaClassTester(unittest.TestCase):
+
+    def setUp(self):
+        self.panda = Panda("Ivo", "ivo@pandamail.com", "male")
+
     def test_the_class_for_existence(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertTrue(isinstance(panda, Panda))
+        self.assertTrue(isinstance(self.panda, Panda))
 
     def test_does_func_name_work(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertEqual(panda.name(), 'Ivo')
+        self.assertEqual(self.panda.name(), 'Ivo')
 
     def test_does_the_email_func_work_shouldnt(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertNotEqual(panda.email(), 'Ivo')
+        self.assertNotEqual(self.panda.email(), 'Ivo')
 
     def test_does_the_email_func_work_should(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertEqual(panda.email(), 'ivo@pandamail.com')
+        self.assertEqual(self.panda.email(), 'ivo@pandamail.com')
 
     def test_gender_work_should(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertEqual(panda.gender(), "male")
+        self.assertEqual(self.panda.gender(), "male")
 
     def test_gender_work_shouldnt(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertNotEqual(panda.gender(), "mae")
+        self.assertNotEqual(self.panda.gender(), "mae")
 
     def test_isMale_true(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertTrue(panda.isMale())
+        self.assertTrue(self.panda.isMale())
 
     def test_isMale_false(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertFalse(panda.isFemale())
+        self.assertFalse(self.panda.isFemale())
 
     def test_str_should(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertEqual(str(panda), 'Ivo')
+        self.assertEqual(str(self.panda), 'Ivo')
 
     def test_str_shouldnt(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertNotEqual(str(panda), 'ivo')
+        self.assertNotEqual(str(self.panda), 'ivo')
 
     def test_eq_should(self):
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
         notPanda = Panda("Ivo", "ivo@pandamail.com", "male")
-        self.assertTrue(panda == notPanda)
+        self.assertTrue(self.panda == notPanda)
+
 
 class TestPandaNetwork(unittest.TestCase):
+
+    def setUp(self):
+        self.panda = Panda("Ivo", "ivo@pandamail.com", "male")
+
     def test_dictionary_retrieval_function_should(self):
         panda_ntw = PandaSocialNetwork()
         self.assertEqual(panda_ntw.pandas(), {})
 
     def test_dictionarry_after_adding_panda(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
-        self.assertEqual(panda_ntw.pandas(), {panda: []})
+        panda_ntw.add_panda(self.panda)
+        self.assertEqual(panda_ntw.pandas(), {self.panda: []})
 
     def test_adding_same_panda_again(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
-        with self.assertRaises(ValueError):
-            panda_ntw.add_panda(panda)
+        panda_ntw.add_panda(self.panda)
+        with self.assertRaises(PandaAlreadyThere):
+            panda_ntw.add_panda(self.panda)
 
     def testing_if_panda_is_in_the_network_should(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
-        self.assertTrue(panda_ntw.has_panda(panda))
+        panda_ntw.add_panda(self.panda)
+        self.assertTrue(panda_ntw.has_panda(self.panda))
 
     def testing_if_adds_panda_should(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
+        panda_ntw.add_panda(self.panda)
         panda2 = Panda("Gosho", "gosho@pandamail.com", "male")
-        panda_ntw.make_friends(panda, panda2)
-        with self.assertRaises(ValueError):
-            panda_ntw.make_friends(panda2, panda)
+        panda_ntw.make_friends(self.panda, panda2)
+        with self.assertRaises(PandasAlreadyFriends):
+            panda_ntw.make_friends(panda2, self.panda)
 
     def testing_if_are_friends_func_works_should(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
+        panda_ntw.add_panda(self.panda)
         panda2 = Panda("Gosho", "gosho@pandamail.com", "male")
-        panda_ntw.make_friends(panda, panda2)
-        self.assertTrue(panda_ntw.are_friends(panda, panda2))
+        panda_ntw.make_friends(self.panda, panda2)
+        self.assertTrue(panda_ntw.are_friends(self.panda, panda2))
 
     def testing_if_friends_of_func_should(self):
         panda_ntw = PandaSocialNetwork()
-        panda = Panda("Ivo", "ivo@pandamail.com", "male")
-        panda_ntw.add_panda(panda)
+        panda_ntw.add_panda(self.panda)
+        with self.assertRaises(PandaAlreadyThere):
+            panda_ntw.add_panda(self.panda)
         panda2 = Panda("Gosho", "gosho@pandamail.com", "male")
-        panda_ntw.make_friends(panda, panda2)
-        self.assertEqual(panda_ntw.friends_of(panda), [panda2])
+        panda_ntw.make_friends(self.panda, panda2)
+        self.assertEqual(panda_ntw.friends_of(self.panda), [panda2])
 if __name__ == '__main__':
     unittest.main()

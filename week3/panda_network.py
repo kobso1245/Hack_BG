@@ -1,7 +1,30 @@
 import re
 
 
+class PandaException(Exception):
+    pass
+
+
+class PandaAlreadyThere(PandaException):
+
+    def __init__(self, value='PandaAlreadyThere'):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+class PandasAlreadyFriends(PandaException):
+
+    def __init__(self, value='PandasAlreadyFriends'):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class Panda:
+
     def __init__(self, name, email, gender):
         if not re.match(r'\w[\w\.-]*@\w[\w\.-]+\.\w+', email):
             print("Wrong email!")
@@ -45,6 +68,7 @@ class Panda:
 
 
 class PandaSocialNetwork:
+
     def __init__(self):
         self.__pandas = {}
 
@@ -53,7 +77,7 @@ class PandaSocialNetwork:
 
     def add_panda(self, panda):
         if panda in self.__pandas:
-            raise ValueError("PandaAlreadyThereError")
+            raise PandaAlreadyThere
         self.__pandas[panda] = []
 
     def has_panda(self, panda):
@@ -65,7 +89,7 @@ class PandaSocialNetwork:
     def make_friends(self, other1, other2):
         if other2 in self.__pandas.keys():
             if other1 in self.__pandas[other2]:
-                raise ValueError("PandasAlreadyFriends")
+                raise PandasAlreadyFriends()
         if other1 in self.__pandas.keys():
             self.__pandas[other1].append(other2)
         else:
