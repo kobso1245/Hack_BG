@@ -87,8 +87,8 @@ class PandaSocialNetwork:
         return self.__pandas
 
     def make_friends(self, other1, other2):
-        if other2 in self.__pandas.keys():
-            if other1 in self.__pandas[other2]:
+        if(other2 in self.__pandas.keys() and
+           other1 in self.__pandas[other2]):
                 raise PandasAlreadyFriends()
         if other1 in self.__pandas.keys():
             self.__pandas[other1].append(other2)
