@@ -1,5 +1,4 @@
 import unittest
-import re
 from panda_network import Panda, PandaSocialNetwork
 from panda_network import PandasAlreadyFriends, PandaAlreadyThere
 
@@ -43,6 +42,9 @@ class PandaClassTester(unittest.TestCase):
         notPanda = Panda("Ivo", "ivo@pandamail.com", "male")
         self.assertTrue(self.panda == notPanda)
 
+    def test_get_panda(self):
+        self.assertEqual(self.panda.get_pandas_info(), "Ivo ivo@pandamail.com male")
+
 
 class TestPandaNetwork(unittest.TestCase):
 
@@ -53,7 +55,7 @@ class TestPandaNetwork(unittest.TestCase):
         panda_ntw = PandaSocialNetwork()
         self.assertEqual(panda_ntw.pandas(), {})
 
-    def test_dictionarry_after_adding_panda(self):
+    def test_dictionary_after_adding_panda(self):
         panda_ntw = PandaSocialNetwork()
         panda_ntw.add_panda(self.panda)
         self.assertEqual(panda_ntw.pandas(), {self.panda: []})

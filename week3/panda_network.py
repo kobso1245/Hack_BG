@@ -1,4 +1,5 @@
 import re
+import json
 
 
 class PandaException(Exception):
@@ -55,7 +56,7 @@ class Panda:
         return self.__name
 
     def __repr__(self):
-        return self.__name
+        return "Panda({}, {}, {})".format(self.__name, self.__email, self.__gender)
 
     def __eq__(self, other):
         return (self.__name == other.name() and
@@ -65,6 +66,9 @@ class Panda:
     def __hash__(self):
         return hash(self.__name + self.__email +
                     self.__gender)
+
+    def get_pandas_info(self):
+        return "{} {} {}".format(self.__name, self.__email, self.__gender)
 
 
 class PandaSocialNetwork:
@@ -89,7 +93,7 @@ class PandaSocialNetwork:
     def make_friends(self, other1, other2):
         if(other2 in self.__pandas.keys() and
            other1 in self.__pandas[other2]):
-                raise PandasAlreadyFriends()
+                return
         if other1 in self.__pandas.keys():
             self.__pandas[other1].append(other2)
         else:
@@ -150,6 +154,37 @@ class PandaSocialNetwork:
                     cnt += 1
         return cnt
 
+    def save_to(self, fle):
+        to_be_written = []
+        for panda in self.get_pandas().keys():
+            lst = self.friends_of(panda)
+            for panda_friend in lst:
+                to_be_written.append(panda.get_pandas_info() + ' ' +
+                                     panda_friend.get_pandas_info())
+        out = open(fle, 'w')
+        json.dump(to_be_written, out)
+        out.close()
+
+    def save_tmp(self, fle):
+        to_be_written ={repr(x): [] for x in self.get_pandas().keys() }
+        for panda in self.get_pandas().keys():
+            lst = self.friends_of(panda)
+            for panda_friend in lst:
+                to_be_written[repr(panda)]. append(repr(panda_friend))
+        out = open(fle, 'w')
+        json.dump(to_be_written, out)
+        out.close()
+
+    def load_from(self, fle):
+            in_file = open(fle)
+            input_info = json.load(in_file)
+            for elem in input_info:
+                name = elem.split(' ')
+                self.make_friends(Panda(name[0], name[1], name[2]), Panda(name[3],
+                                  name[4], name[5]))
+            in_file.close()
+
+
 if __name__ == '__main__':
     panda_ntw = PandaSocialNetwork()
     panda = Panda("Ivo", "ivo@pandamail.com", "male")
@@ -166,4 +201,4 @@ if __name__ == '__main__':
     panda_ntw.make_friends(panda4, panda5)
     panda_ntw.make_friends(panda5, panda6)
     panda_ntw.make_friends(panda3, panda6)
-    print(panda_ntw.how_many_gender_in_network(2, panda, 'male'))
+    panda_ntw.save_tmp("dada1.json")
