@@ -56,7 +56,7 @@ class Panda:
         return self.__name
 
     def __repr__(self):
-        return "Panda({}, {}, {})".format(self.__name, self.__email, self.__gender)
+        return self.__name
 
     def __eq__(self, other):
         return (self.__name == other.name() and
@@ -90,6 +90,9 @@ class PandaSocialNetwork:
     def get_pandas(self):
         return self.__pandas
 
+    def get_pandas_list(self):
+        return list(self.__pandas.keys())
+
     def make_friends(self, other1, other2):
         if(other2 in self.__pandas.keys() and
            other1 in self.__pandas[other2]):
@@ -119,27 +122,31 @@ class PandaSocialNetwork:
         elif panda1 in self.__pandas[panda2]:
             return 1
         else:
-            road_table = {}
-            for panda in self.__pandas.keys():
-                road_table[panda] = ""
-
-            obhodeni = [panda1]
+            road_table = {panda: '' for panda in self.__pandas.keys()}
+            opashka = [panda1]
+            obhodeni = set()
+            obhodeni.add(panda1)
             curr_panda = ""
-            while obhodeni != []:
-                curr_panda = obhodeni.pop(0)
+            found = False
+            while not (opashka == []):
+                curr_panda = opashka.pop(0)
                 if curr_panda == panda2:
+                    found = True
                     break
                 else:
                     for naslednik in self.__pandas[curr_panda]:
                         if naslednik not in obhodeni:
-                            obhodeni.append(naslednik)
-                            if type(road_table[naslednik]) is str:
-                                road_table[naslednik] = curr_panda
+                            opashka.append(naslednik)
+                            obhodeni.add(naslednik)
+                            road_table[naslednik] = curr_panda
+            if not found:
+                return -1
             road_len = 0
             start = panda2
             while start != panda1:
                 road_len += 1
                 start = road_table[start]
+
             return road_len
 
     def are_connected(self, panda1, panda2):
@@ -158,15 +165,18 @@ class PandaSocialNetwork:
         to_be_written = []
         for panda in self.get_pandas().keys():
             lst = self.friends_of(panda)
-            for panda_friend in lst:
-                to_be_written.append(panda.get_pandas_info() + ' ' +
-                                     panda_friend.get_pandas_info())
+            if lst == []:
+                to_be_written.append(panda.get_pandas_info())
+            else:
+                to_be_written.extend([panda.get_pandas_info() + ' ' +
+                                      panda_friend.get_pandas_info() for
+                                      panda_friend in lst])
         out = open(fle, 'w')
         json.dump(to_be_written, out)
         out.close()
 
     def save_tmp(self, fle):
-        to_be_written ={repr(x): [] for x in self.get_pandas().keys() }
+        to_be_written = {repr(x): [] for x in self.get_pandas().keys()}
         for panda in self.get_pandas().keys():
             lst = self.friends_of(panda)
             for panda_friend in lst:
@@ -174,31 +184,30 @@ class PandaSocialNetwork:
         out = open(fle, 'w')
         json.dump(to_be_written, out)
         out.close()
+    
+    def pandas_details(self):
+        pandas = self.get_pandas_list()
+        return [panda.get_pandas_info() for panda in pandas]
 
     def load_from(self, fle):
             in_file = open(fle)
             input_info = json.load(in_file)
             for elem in input_info:
                 name = elem.split(' ')
-                self.make_friends(Panda(name[0], name[1], name[2]), Panda(name[3],
-                                  name[4], name[5]))
+                if len(name) == 3:
+                    self.add_panda(Panda(name[0], name[1], name[2]))
+                else:
+                    self.make_friends(Panda(name[0], name[1], name[2]),
+                                      Panda(name[3], name[4], name[5]))
             in_file.close()
 
+    def show_pandas(self):
+        pandas = self.pandas_details()
+        for panda in pandas:
+            print(panda)
 
 if __name__ == '__main__':
     panda_ntw = PandaSocialNetwork()
-    panda = Panda("Ivo", "ivo@pandamail.com", "male")
-    panda2 = Panda("Gosho", "gosho@pandamail.com", "male")
-    panda3 = Panda("Toshko", "gosho@pandamail.com", "male")
-    panda4 = Panda("Q", "q@pandamail.com", "male")
-    panda5 = Panda("L", "l@pandamail.com", "male")
-    panda6 = Panda("R", "r@pandamail.com", "male")
-    panda7 = Panda("M", "r@pandamail.com", "male")
-    panda_ntw.make_friends(panda, panda2)
-    panda_ntw.make_friends(panda, panda4)
-    panda_ntw.make_friends(panda2, panda4)
-    panda_ntw.make_friends(panda2, panda3)
-    panda_ntw.make_friends(panda4, panda5)
-    panda_ntw.make_friends(panda5, panda6)
-    panda_ntw.make_friends(panda3, panda6)
-    panda_ntw.save_tmp("dada1.json")
+    panda_ntw.load_from('dada1.json')
+    panda_ntw.show_pandas()
+
