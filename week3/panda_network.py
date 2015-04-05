@@ -64,8 +64,8 @@ class Panda:
                 self.__gender == other.gender())
 
     def __hash__(self):
-        return hash(self.__name + self.__email +
-                    self.__gender)
+        return hash(self.name() + self.email() +
+                    self.gender())
 
     def get_pandas_info(self):
         return "{} {} {}".format(self.__name, self.__email, self.__gender)
@@ -209,5 +209,10 @@ class PandaSocialNetwork:
 if __name__ == '__main__':
     panda_ntw = PandaSocialNetwork()
     panda_ntw.load_from('dada1.json')
+    panda_ntw.add_panda(Panda("Test", "test@pandamail.com", "male"))
     panda_ntw.show_pandas()
+    tst = Panda("dadadada", "te@gmail.com", "male")
+    print(tst.name())
+
+
 
