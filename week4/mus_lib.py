@@ -112,8 +112,8 @@ class Playlist:
 
         if self.get_shuffle():
             to_choose_from = list(self.curr_songs.difference(self.__passed))
-            if to_choose_from == set():
-                curr = random.choice(self.curr_songs)
+            if to_choose_from == []:
+                curr = random.choice(list(self.curr_songs))
                 return self.__songs[curr]
             else:
                 curr = random.choice(to_choose_from)
@@ -128,8 +128,8 @@ class Playlist:
                 return self.__songs[self.__curr_song - 1]
 
         if self.get_repeat():
-            if self.__songs[self.__curr_song] == self.__songs[-1]:
-                self.__curr_song = 0
+            if self.__curr_song == len(self.__songs):
+                self.__curr_song = 1
                 return self.__songs[0]
             else:
                 self.__curr_song += 1
@@ -231,43 +231,47 @@ class MusicPlayer:
         self.__playlists = []
         self.__all_songs = Playlist("All songs")
         self.__curr_playlist = self.__all_songs
+        
+        try:
+            fl = open("config", "r")
+            lst_of_not_done_paths = fl.readlines()
+            lst_of_paths = [path[:-1] for path in lst_of_not_done_paths]
+            self.first_time(lst_of_paths)
+            fl.close()
 
-        inp = input("Please select crawling location or write def: ")
-        if inp == "def":
-            inp="/home/kaloyan/Music"
-        crw = MusicCrawler("All songs", inp)
-        self.__curr_playlist = crw.generate_playlist()
-        self.__all_songs = self.__curr_playlist
-        self.__playing = self.__curr_playlist.next_song()
-        self.__playlists.append(self.__curr_playlist)
-
+        except FileNotFoundError:
+            inp = input("""Please write all the paths where your music is stored\
+with ',' between them: """)
+            lst_of_paths = inp.split(',')
+            self.first_time(lst_of_paths)
+            to_be_saved = [path+'\n' for path in lst_of_paths]
+            fl = open("config", "w")
+            fl.writelines(to_be_saved)
+            fl.close()
+        print("Banana Player v42.0. Write <h> for help.")
         inp = 1
         while inp:
-            inp = input("Please 2: ")
-            if "craw" in inp:
-                crw = MusicCrawler(inp.split(' ')[1])
-                playlst_tmp=Playlist("All songs")
-                playlst_tmp = crw.generate_playlist()
-                self.__playlists.append(playlist_tmp)
-
-            if inp == "show":
+            inp = input("Tell me what to do, master..: ")
+            if inp == "sh":
                 self.__curr_playlist.pprint_playlist()
            
-            if inp == "show -p":
+            if inp == "sh -p":
                 print(tabulate([(playlist.name(),
-                                 playlist.total_length(nice=True)) for\
+                                 playlist.total_length(nice=True),
+                                 playlist.get_shuffle(),
+                                 playlist.get_repeat()) for\
                                  playlist in self.__playlists],
-                                 headers = ["Name", "Length"],
+                                 headers = ["Name", "Length", "Shuffle","Repeat"],
                                  tablefmt="grid"))
 
-            if "change" in inp:
+            if "ch" in inp:
                 plst = int(inp.split(" ")[1]) - 1
                 self.__curr_playlist= self.__playlists[plst]
                 self.__playing = self.__curr_playlist.next_song()
                 self.__curr_proc = 0
 
-            if "start" in inp and not self.__curr_proc:
-                if inp not ==  "start":
+            if "pl" in inp and not self.__curr_proc:
+                if inp !=  "pl":
                     sng_n = int(inp.split(" ")[1] - 1)
                     self.__playing = self.__curr_playlist.show_songs()[sng_n]
                 self.__curr_proc = play(self.__playing.path())
@@ -278,11 +282,11 @@ class MusicPlayer:
                                  tablefmt="grid"))
 
 
-            if inp == "stop" and self.__curr_proc:
+            if inp == "s" and self.__curr_proc:
                 stop(self.__curr_proc)
                 self.__curr_proc = 0
             
-            if inp == "next":
+            if inp == "n":
                 try:
                     if self.__curr_proc:
                         stop(self.__curr_proc)
@@ -293,24 +297,29 @@ class MusicPlayer:
                                      headers=["Artist", "Song", "Length"],
                                      tablefmt="grid"))
                     self.__curr_proc = play(self.__playing.path())
-                except Exception:
+                except Exception as data:
+                    print(data)
                     print("End of playlist!")
                     stop(self.__curr_proc)
                     self.__playing = self.__curr_playlist.show_songs()[0]
                     self.__curr_playlist.flush()
 
-            if inp == "curr":
+            if inp == "c":
                 print(tabulate([[self.__playing.artist(),
                                  self.__playing.title(),
                                  self.__playing.length(seconds=False)]],
                                  headers=["Artist", "Song", "Length"],
                                  tablefmt="grid"))
             
-            if inp == "help":
-                print(tabulate([["show","Shows all songs in the playlist."],
-                                ["start [song number]", "Starts a song."],
-                                ["stop", "Stops the currently played song"],
-                                ["next", "Starts the next song."]],
+            if inp == "h":
+                print(tabulate([["sh [-p]","Shows all songs in the playlist. [-p] shows all playlists"],
+                                ["pl [song number]", "Starts a song."],
+                                ["s", "Stops the currently played song"],
+                                ["n", "Starts the next song."],
+                                ["c", "Current song"],
+                                ["ch <playlist number>","Change the currently played playlist"],
+                                ["add", "Adds a new playlist"],
+                                ["kill a panda", "No, you can't kill pandas...not today"]],
                                 headers = ["Option", "What it does"]))
 
             if inp == "add":
@@ -319,7 +328,7 @@ class MusicPlayer:
 and <No> if you don't: """)
                 rep = input("""Please write <Yes> if you want repeat\
 and <No> if you don't: """)
-
+                
                 if shuf.lower() == "yes" and rep.lower == "yes":
                     print("You cant have both shuffle and repeat on")
 
@@ -328,25 +337,31 @@ and <No> if you don't: """)
                 else:
                     shuf = False
 
-                if rep.lower == "yes":
+                if "yes" in rep.lower():
                     rep = True
                 else:
                     rep = False
                 playlist_for_adding = Playlist(name, shuffle=shuf, repeat=rep)
-                
                 inp = input("""Please write the numbers of the songs that you \
 want to add and put ',' between them: """)
                 
                 lst = inp.split(',')
                 for elem in lst:
                     playlist_for_adding.add_song(self.__all_songs.show_songs()[int(elem) - 1])
-                
                 self.__playlists.append(playlist_for_adding)
 
                 print("All done!")
 
     def add_playlist(self, playlist):
         self.__playlist.append(playlist)
+    
+    def first_time(self,lst_of_paths):
+            for path in lst_of_paths:
+                crw = MusicCrawler("All songs", path)
+                self.__curr_playlist.add_songs(crw.generate_playlist())
+            self.__all_songs = self.__curr_playlist
+            self.__playlists.append(self.__all_songs)
+            self.__playing = self.__playlists[0].next_song()
 
 def play(mp3Path):
     p = Popen(["mpg123", mp3Path], stdout=PIPE, stderr=PIPE)
