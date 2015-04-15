@@ -6,6 +6,8 @@ import json
 from time import sleep
 from mutagen.mp3 import MP3
 from subprocess import Popen, PIPE
+
+
 class Song:
     def __init__(self, title, artist, album, length, path=""):
         self.__title = title
@@ -13,6 +15,7 @@ class Song:
         self.__album = album
         self.__length = length
         self.__path = path
+
     def __str__(self):
         return "{} - {} from {} - {}".format(self.__artist, self.__title,
                                              self.__album, self.__length)
@@ -43,7 +46,6 @@ class Song:
     def __hash__(self):
         return hash(str(self.__title) + str(self.__artist) +
                     str(self.__album) + str(self.__length))
-
 
 
 class Playlist:
@@ -94,14 +96,13 @@ class Playlist:
     def total_length(self, nice=False):
         time = sum([song.length(seconds=True) for song in self.__songs])
         if nice:
-             return timedelta(seconds=time)
+            return timedelta(seconds=time)
         return time
 
     def artists(self):
         artsts = set([song.artist() for song in self.__songs])
-        return {artist: sum([1 for elem in self.__songs if elem.artist() == artist]) 
+        return {artist: sum([1 for elem in self.__songs if elem.artist() == artist])
                 for artist in artsts}
-
 
     def flush(self):
         self.__curr_song = 0
@@ -121,7 +122,7 @@ class Playlist:
                 return self.__songs[curr]
 
         if not self.get_repeat():
-            if self.__curr_song ==self.__length:
+            if self.__curr_song == self.__length:
                 raise Exception
             else:
                 self.__curr_song += 1
@@ -149,7 +150,7 @@ class Playlist:
         sleep(100)
 
     def pprint_playlist(self):
-        i  = 1
+        i = 1
         out_lst = []
         for elem in self.__songs:
             out_lst.append([i, elem.artist(), elem.title(), elem.length()])
@@ -158,7 +159,6 @@ class Playlist:
         print(tabulate(out_lst, headers=["Number", "Artist", "Song", "Length"],
                        tablefmt="grid"))
 
-    
     def save(self, path=""):
         artists = {song.artist(): [] for song in self.__songs}
         for song in self.__songs:
@@ -166,23 +166,23 @@ class Playlist:
                                                     song.album(),
                                                     song.length(),
                                                     song.path())))
-        if path=="":
-            fl = open(self.__name.replace(" ","-")+'.json',"w")
+        if path == "":
+            fl = open(self.__name.replace(" ", "-")+'.json', "w")
         else:
             fl = open(path+"/"+self.__name.replace(" ", "-") + ".json", "w")
         json.dump(artists, fl, indent=4)
         fl.close()
-        
+
     @staticmethod
     def load(path):
         dct = []
         with open(path, "r") as f:
-            dct=json.load(f)
-        
+            dct = json.load(f)
+
         if path.count("/"):
             pl_name = " ".join(path.split('/')[-1].split('-')).split('.')[0]
         else:
-            pl_name =" ".join(path.split('-')).split('.')[0]
+            pl_name = " ".join(path.split('-')).split('.')[0]
 
         playlst = Playlist(name=pl_name)
         for artst in dct:
@@ -193,14 +193,15 @@ class Playlist:
                                       path=names[3]))
         return playlst
 
+
 class MusicCrawler:
     def __init__(self, name, path):
         self.__path = path
         self.__playlst = Playlist(name)
-    
+
     def gen(self, path):
         try:
-            dirs = os.listdir(path)            
+            dirs = os.listdir(path)
         except FileNotFoundError as error:
             print(error)
 
@@ -210,7 +211,6 @@ class MusicCrawler:
                 full_name = os.path.splitext(pth)
                 if full_name[1] == '.mp3':
                         audio = MP3(pth)
-                        lst = pth.split('/')[-1]
                         self.__playlst.add_song(Song(audio['TIT2'],
                                                      audio['TPE1'],
                                                      audio['TALB'],
@@ -231,7 +231,7 @@ class MusicPlayer:
         self.__playlists = []
         self.__all_songs = Playlist("All songs")
         self.__curr_playlist = self.__all_songs
-        
+
         try:
             fl = open("config", "r")
             lst_of_not_done_paths = fl.readlines()
@@ -254,38 +254,36 @@ with ',' between them: """)
             inp = input("Tell me what to do, master..: ")
             if inp == "sh":
                 self.__curr_playlist.pprint_playlist()
-           
+
             if inp == "sh -p":
                 print(tabulate([(playlist.name(),
                                  playlist.total_length(nice=True),
                                  playlist.get_shuffle(),
-                                 playlist.get_repeat()) for\
-                                 playlist in self.__playlists],
-                                 headers = ["Name", "Length", "Shuffle","Repeat"],
-                                 tablefmt="grid"))
+                                 playlist.get_repeat()) for playlist in self.__playlists],
+                               headers=["Name", "Length", "Shuffle", "Repeat"],
+                               tablefmt="grid"))
 
             if "ch" in inp:
                 plst = int(inp.split(" ")[1]) - 1
-                self.__curr_playlist= self.__playlists[plst]
+                self.__curr_playlist = self.__playlists[plst]
                 self.__playing = self.__curr_playlist.next_song()
                 self.__curr_proc = 0
 
             if "pl" in inp and not self.__curr_proc:
-                if inp !=  "pl":
+                if inp != "pl":
                     sng_n = int(inp.split(" ")[1] - 1)
                     self.__playing = self.__curr_playlist.show_songs()[sng_n]
                 self.__curr_proc = play(self.__playing.path())
                 print(tabulate([[self.__playing.artist(),
                                  self.__playing.title(),
                                  self.__playing.length(seconds=False)]],
-                                 headers=["Artist", "Song", "Length"],
-                                 tablefmt="grid"))
-
+                               headers=["Artist", "Song", "Length"],
+                               tablefmt="grid"))
 
             if inp == "s" and self.__curr_proc:
                 stop(self.__curr_proc)
                 self.__curr_proc = 0
-            
+
             if inp == "n":
                 try:
                     if self.__curr_proc:
@@ -294,8 +292,8 @@ with ',' between them: """)
                     print(tabulate([[self.__playing.artist(),
                                      self.__playing.title(),
                                      self.__playing.length(seconds=False)]],
-                                     headers=["Artist", "Song", "Length"],
-                                     tablefmt="grid"))
+                                   headers=["Artist", "Song", "Length"],
+                                   tablefmt="grid"))
                     self.__curr_proc = play(self.__playing.path())
                 except Exception as data:
                     print(data)
@@ -308,19 +306,19 @@ with ',' between them: """)
                 print(tabulate([[self.__playing.artist(),
                                  self.__playing.title(),
                                  self.__playing.length(seconds=False)]],
-                                 headers=["Artist", "Song", "Length"],
-                                 tablefmt="grid"))
-            
+                               headers=["Artist", "Song", "Length"],
+                               tablefmt="grid"))
+
             if inp == "h":
-                print(tabulate([["sh [-p]","Shows all songs in the playlist. [-p] shows all playlists"],
+                print(tabulate([["sh [-p]", "Shows all songs in the playlist. [-p] shows all playlists"],
                                 ["pl [song number]", "Starts a song."],
                                 ["s", "Stops the currently played song"],
                                 ["n", "Starts the next song."],
                                 ["c", "Current song"],
-                                ["ch <playlist number>","Change the currently played playlist"],
+                                ["ch <playlist number>", "Change the currently played playlist"],
                                 ["add", "Adds a new playlist"],
                                 ["kill a panda", "No, you can't kill pandas...not today"]],
-                                headers = ["Option", "What it does"]))
+                               headers=["Option", "What it does"]))
 
             if inp == "add":
                 name = input("Please select name of the playlist: ")
@@ -328,7 +326,7 @@ with ',' between them: """)
 and <No> if you don't: """)
                 rep = input("""Please write <Yes> if you want repeat\
 and <No> if you don't: """)
-                
+
                 if shuf.lower() == "yes" and rep.lower == "yes":
                     print("You cant have both shuffle and repeat on")
 
@@ -344,7 +342,7 @@ and <No> if you don't: """)
                 playlist_for_adding = Playlist(name, shuffle=shuf, repeat=rep)
                 inp = input("""Please write the numbers of the songs that you \
 want to add and put ',' between them: """)
-                
+
                 lst = inp.split(',')
                 for elem in lst:
                     playlist_for_adding.add_song(self.__all_songs.show_songs()[int(elem) - 1])
@@ -354,8 +352,8 @@ want to add and put ',' between them: """)
 
     def add_playlist(self, playlist):
         self.__playlist.append(playlist)
-    
-    def first_time(self,lst_of_paths):
+
+    def first_time(self, lst_of_paths):
             for path in lst_of_paths:
                 crw = MusicCrawler("All songs", path)
                 self.__curr_playlist.add_songs(crw.generate_playlist())
@@ -363,16 +361,15 @@ want to add and put ',' between them: """)
             self.__playlists.append(self.__all_songs)
             self.__playing = self.__playlists[0].next_song()
 
+
 def play(mp3Path):
     p = Popen(["mpg123", mp3Path], stdout=PIPE, stderr=PIPE)
     return p
+
 
 def stop(process):
     process.kill()
 
 
-
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     music_pl = MusicPlayer()
