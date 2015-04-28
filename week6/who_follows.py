@@ -2,8 +2,13 @@ import requests
 import json
 from graph import *
 
-STANDARD_FOLLOWERS = "https://api.github.com/users/{}/followers?client_id=676230d310fd2331b65b&client_secret=bd0f5b2cbae63efd234b230c5c31d7cb271da8de"
-STANDARD_FOLLOWING = "https://api.github.com/users/{}/following?client_id=676230d310fd2331b65b&client_secret=bd0f5b2cbae63efd234b230c5c31d7cb271da8de"
+STANDARD_FOLLOWERS = "https://api.github.com/users/{}/followers?page={}&client_id={}&client_secret={}"
+STANDARD_FOLLOWING = "https://api.github.com/users/{}/following?page={}&client_id={}&client_secret={}"
+
+
+def get_id_and_secret(filename):
+    jsoned = json.loads(open(filename).read())
+    return (jsoned['client_id'], jsoned['client_secret'])
 
 class SocialNetwork:
     def __init__(self, name):
@@ -12,51 +17,73 @@ class SocialNetwork:
         self.__visited = set()
 
     def get_lab(self):
-        req = requests.get("https://api.github.com/users/kobso1245?client_id=676230d310fd2331b65b&client_secret=bd0f5b2cbae63efd234b230c5c31d7cb271da8de").json()
+        id_sec = get_id_and_secret("client.json")
+        req = requests.get("https://api.github.com/users/kobso1245?client_id={}&client_secret={}".format(id_sec[0], id_sec[1])).json()
         return req
 
     def add_level(self):
         pass
 
-    def get_network_for(self, name):
+    def get_follow(self, name):
+        jsoned = "d"
+        cnt = 1
         dct = {}
-        dct['following'] = []
         dct['followers'] = []
+        dct['following'] = []
+        id_sec = get_id_and_secret("client.json")
+        while jsoned != []:
+            jsoned = requests.get(STANDARD_FOLLOWERS.format(name, cnt, id_sec[0],
+                                                                   id_sec[1])).json()
+            cnt += 1
+            for follower in jsoned:
+                dct['followers'].append(follower['login'])
 
-        req_followers = requests.get(STANDARD_FOLLOWERS.format(name)).json()
-        req_following = requests.get(STANDARD_FOLLOWING.format(name)).json()
+        jsoned = "d"
+        cnt = 1
+        while jsoned != []:
+            jsoned = requests.get(STANDARD_FOLLOWING.format(name, cnt, id_sec[0],
+                                                                   id_sec[1])).json()
+            
+            cnt += 1
+            for follower in jsoned:
+                dct['following'].append(follower['login'])
 
-        for follower in req_followers:
-            dct['followers'].append(follower["login"])
-
-        for follower in req_following:
-            dct["following"].append(follower['login'])
         return dct
+
+
+    def get_network_for(self, name):
+        return self.get_follow(name)
 
     def make_graph(self, start_name, level):
         self._dfs_level(level, start_name)
 
     def _dfs_level(self, level, name):
+        
         if level == 0:
             return
-        
-        tple = self.get_network_for(name)
-        followers = tple["followers"]
-        following = tple["following"]
+
+        follow = self.get_network_for(name)
+        followers = follow['followers']
+        following = follow['following']
+
+        self.__visited.add(name)
 
         for follower in followers:
+            self.__graph.add_edge(follower, name)
             if follower not in self.__visited:
-                self.__visited.add(follower)
-                self.__graph.add_edge(follower, name)
-                self._dfs_level(level-1, follower)
+                self._dfs_level(level - 1, follower)
 
-        for follow in following:
-            if follow not in self.__visited:
-                self.__visited.add(follow)
-                self.__graph.add_edge(name, follow)
-                self._dfs_level(level-1, follow)
+        for follower in following:
+            self.__graph.add_edge(name, follower)
+            if follower not in self.__visited:
+                self._dfs_level(level - 1, follower)
+
 
 if __name__ == "__main__":
     soc = SocialNetwork("da")
-    print(json.dumps(soc.get_network_for("kobso1245"), indent=4))
-    #soc.make_graph("kobso1245", 2)
+    #social = soc.get_network_for("RadoRado")
+    #print(json.dumps(social, indent=4))
+    #print(len(social['followers']))
+    #print(len(social['following']))
+    social = soc.make_graph("kobso1245", 2)
+    print(json.dumps(soc._SocialNetwork__graph._DirectedGraph__nodes, indent = 4))
