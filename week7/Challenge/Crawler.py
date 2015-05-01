@@ -21,7 +21,7 @@ def get_links(website):
 
     for link in bs.find_all('a'):
         curr_link = link.get("href")
-        if type(curr_link) is not type(None) and 'http' in curr_link: #and 'link.php' in curr_link:  #curr_link[:4] == 'link':
+        if type(curr_link) is not type(None) and 'http' in curr_link and curr_link.count('/')<=3: #and 'link.php' in curr_link:  #curr_link[:4] == 'link':
             #curr_link = website  + curr_link
             #all_links.append(curr_link)
             if curr_link[:4] == 'link':
