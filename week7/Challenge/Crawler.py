@@ -6,17 +6,35 @@ from Histogram import Histogram
 
 
 def get_links(website):
+
+    #webs = website.split('/')
+    #if type(webs) is not type(None) and  len(webs) >=3:
+        #website = webs[0] + '//' + webs[2]+'/'
+
     try:
-        req = requests.get(website)
+        req = requests.get(website, timeout=2)
     except Exception:
         return []
     bs = BeautifulSoup(req.text)
     all_links = []
+    
+
     for link in bs.find_all('a'):
         curr_link = link.get("href")
-        if type(curr_link) is not type(None) and  curr_link[:4] == 'link':
-            curr_link = website  + curr_link
+        if type(curr_link) is not type(None) and 'link.php' in curr_link:  #curr_link[:4] == 'link':
+            #curr_link = website  + curr_link
+            #all_links.append(curr_link)
+            if curr_link[:4] == 'link':
+                webs = website.split('/')
+                if type(webs) is not type(None) and  len(webs) >=3:
+                    website = webs[0] + '//' + webs[2]+'/'
+                curr_link = website + curr_link
             all_links.append(curr_link)
+
+    if website == 'http://register.start.bg':
+        print("daaaaaaaaaaaaaa")
+        print(all_links)
+
 
     return all_links
 
@@ -108,19 +126,23 @@ def get_histogram(all_links):
     return hist
 
 
-def links(website):
+def links(website, links_all):
     curr_links = get_links(website)
+    for link in curr_links:
+        links_all.add(link)
+    #print(curr_links)
     if len(curr_links) == 0:
         return [] 
     else:
         for link in curr_links:
-            return curr_links + links(link)
+            print(link)
+            links(link, links_all)
 
 def craw(website, save_to):
     make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
-    all_links = []
-    all_links = links(website)
+    all_links = set()
+    links(website, all_links)
     #all_links = get_links(website)
-    print(all_links)
+    #print(all_links)
     hist = get_histogram(all_links)
     save_file(save_to, hist)
