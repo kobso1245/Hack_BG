@@ -30,7 +30,10 @@ def get_links(website):
                     website = webs[0] + '//' + webs[2]+'/'
                 curr_link = website + curr_link
             all_links.append(curr_link)
-
+        #adding all links like http://bla/blabla/blablabla.... as http://bla
+        elif  type(curr_link) is not type(None) and 'http' in curr_link[:4] and curr_link.count('/')>=3 and 'link.php' not in curr_link:
+            splitted = curr_link.split('/')
+            all_links.append(splitted[0] + '//' + splitted[2])
 
     return all_links
 
