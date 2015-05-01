@@ -134,7 +134,10 @@ def links(website, links_all, poseteni):
         for link in curr_links:
             if link not in poseteni:
                 print(link)
-                links(link, links_all, poseteni)
+                try:
+                    links(link, links_all, poseteni)
+                except Exception:
+                    return
 
 def craw(website, save_to):
     make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
