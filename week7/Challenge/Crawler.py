@@ -21,7 +21,7 @@ def get_links(website):
 
     for link in bs.find_all('a'):
         curr_link = link.get("href")
-        if type(curr_link) is not type(None) and 'link.php' in curr_link:  #curr_link[:4] == 'link':
+        if type(curr_link) is not type(None) and 'http' in curr_link: #and 'link.php' in curr_link:  #curr_link[:4] == 'link':
             #curr_link = website  + curr_link
             #all_links.append(curr_link)
             if curr_link[:4] == 'link':
@@ -30,10 +30,6 @@ def get_links(website):
                     website = webs[0] + '//' + webs[2]+'/'
                 curr_link = website + curr_link
             all_links.append(curr_link)
-
-    if website == 'http://register.start.bg':
-        print("daaaaaaaaaaaaaa")
-        print(all_links)
 
 
     return all_links
@@ -126,7 +122,8 @@ def get_histogram(all_links):
     return hist
 
 
-def links(website, links_all):
+def links(website, links_all, poseteni):
+    poseteni.add(website)
     curr_links = get_links(website)
     for link in curr_links:
         links_all.add(link)
@@ -135,13 +132,15 @@ def links(website, links_all):
         return [] 
     else:
         for link in curr_links:
-            print(link)
-            links(link, links_all)
+            if link not in poseteni:
+                print(link)
+                links(link, links_all, poseteni)
 
 def craw(website, save_to):
     make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
     all_links = set()
-    links(website, all_links)
+    poseteni = set()
+    links(website, all_links, poseteni)
     #all_links = get_links(website)
     #print(all_links)
     hist = get_histogram(all_links)
