@@ -56,12 +56,27 @@ def change_name(name):
 def make_table(name):
     conn = sqlite3.connect(name)
     cursor = conn.cursor()
-
+    conn.row_factory = sqlite3.Row
     create_table_query = """
     CREATE TABLE IF NOT EXISTS websites(url TEXT PRIMARY KEY, server TEXT)
     """
     cursor.execute(create_table_query)
     conn.commit()
+
+    get_query = '''
+    SELECT url from websites
+    '''
+
+    database = set()
+
+    data = cursor.execute(get_query)
+    rows = data.fetchall()
+    conn.commit()
+
+    for row in rows:
+        database.add(tuple(row)[0])
+
+    return (conn, cursor, database)
 
 
 def get_histogram(all_links):
@@ -125,29 +140,55 @@ def get_histogram(all_links):
     return hist
 
 
-def links(website, links_all, poseteni):
+def to_database(link ,database, conn, cursor,to_be_added, cnt):
+    update_query = '''
+    INSERT INTO websites(url, server)
+    VALUES(?, ?)
+    '''
+
+    our_headers = {
+             "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+             }
+
+    req = requests.head(link,
+                        headers=our_headers,
+                        timeout=4,
+                        allow_redirects=True)
+    name = req.headers['Server']
+    to_be_added.append((link, name))
+    if cnt == 0:
+        cursor.executemany(update_query, to_be_added)
+        cnt = 10
+        to_be_added = []
+        conn.commit()
+
+
+def links(website, links_all, poseteni, database_to_add, to_be_added,cursor, conn,cnt):
     poseteni.add(website)
     curr_links = get_links(website)
     for link in curr_links:
         links_all.add(link)
     #print(curr_links)
     if len(curr_links) == 0:
+        to_database(link, database_to_add, conn, cursor, to_be_added,cnt - 1)
         return [] 
     else:
         for link in curr_links:
-            if link not in poseteni:
+            if link not in poseteni and link not in database_to_add:
                 print(link)
                 try:
-                    links(link, links_all, poseteni)
+                    links(link, links_all, poseteni, database_to_add,to_be_added,cursor, conn, cnt)
                 except Exception:
-                    return
+                   #add to database 
+                   to_database(link, database_to_add, conn, cursor, to_be_added, cnt - 1)
 
 def craw(website, save_to):
-    make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
+    conn, cursor, in_database = make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
     all_links = set()
     poseteni = set()
-    links(website, all_links, poseteni)
+    to_be_added = []
+    links(website, all_links, poseteni, in_database, to_be_added,cursor, conn, 10)
     #all_links = get_links(website)
     #print(all_links)
-    hist = get_histogram(all_links)
-    save_file(save_to, hist)
+    #hist = get_histogram(all_links)
+    #save_file(save_to, hist)
