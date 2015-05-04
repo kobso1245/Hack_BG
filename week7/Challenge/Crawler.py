@@ -170,7 +170,7 @@ def links(website, links_all, poseteni, database_to_add, to_be_added,cursor, con
         links_all.add(link)
     #print(curr_links)
     if len(curr_links) == 0:
-        to_database(link, database_to_add, conn, cursor, to_be_added,cnt - 1)
+        to_database(website, database_to_add, conn, cursor, to_be_added,cnt - 1)
         return [] 
     else:
         for link in curr_links:
@@ -178,9 +178,13 @@ def links(website, links_all, poseteni, database_to_add, to_be_added,cursor, con
                 print(link)
                 try:
                     links(link, links_all, poseteni, database_to_add,to_be_added,cursor, conn, cnt)
+
                 except Exception:
                    #add to database 
-                   to_database(link, database_to_add, conn, cursor, to_be_added, cnt - 1)
+                    to_database(link, database_to_add, conn, cursor, to_be_added, cnt - 1)
+
+        to_database(website, database_to_add, conn, cursor, to_be_added, cnt - 1)
+
 
 def craw(website, save_to):
     conn, cursor, in_database = make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
