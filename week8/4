@@ -1,0 +1,61 @@
+import sqlite3
+import requests
+
+
+def get_data_to_json(name):
+    return requests.get(name).json()
+
+
+def get_all_courses_names(jsoned):
+    tuples = []
+    for student in jsoned:
+        for course in student['courses']:
+            tuples.append((student['name'],student['github'], course['name']))
+    return tuples
+
+
+def get_data_and_return_tuples(name):
+    return get_all_courses_names(get_data_to_json(name))
+
+
+def get_courses_names(tuples):
+    courses = set()
+    for curr_tuple in tuples:
+        courses.add(curr_tuple[2])
+    return courses
+
+
+
+def get_people_names(tuples):
+    people = set()
+    for person in tuples:
+        people.add(person[0], person[1])
+    return people
+
+def make_tables(people, courses):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor
+
+    create_courses_query = '''
+    CREATE TABLE IF NOT EXISTS courses(name TEXT PRIMARY KEY)
+    '''
+
+    create_people_query = '''
+    CREATE TABLE IF NOT EXISTS people(name TEXT PRIMARY KEY, github TEXT)
+    '''
+
+    cursor.execute(create_courses_query)
+    cursor.execute(create_people_query)
+
+    conn.commit()
+
+
+if __name__ == '__main__':
+    #print(get_all_courses_names(get_data_to_json("https://hackbulgaria.com/api/students/")))
+    make_tables()
+
+
+
+
+
+
