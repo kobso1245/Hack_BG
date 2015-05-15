@@ -1,3 +1,5 @@
+from random import randint
+
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime
@@ -6,12 +8,18 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Session
 #from start import session
 
+
+
+SMALLEST_NUMBER = 50000
+BIGGEST_NUMBER = 99999
+
+
 Base = declarative_base()
 class Account(Base):
     __tablename__ = "Accounts"
     account_id = Column(Integer, primary_key=True)
     client_id = Column(Integer, ForeignKey("Clients.client_id"))
-    username = Column(String)
+    username = Column(String, unique=True)
     balance = Column(Float) 
     password = Column(String)
     message = Column(String)
@@ -48,8 +56,12 @@ class Account(Base):
                     "reason": "Wrong password!"
                     }
 
+        return {"result": True,
+                "reason": "Password changed successfully!"
+                }
+
     def withdraw_money(self, ammount):
-        if self.balance < ammount:
+        if self.balance < ammount or ammount < 0:
             return {"result": False,
                     "reason": "Trying to withdraw more than you have!"
                     }
@@ -77,7 +89,7 @@ class Account(Base):
         return self.message
 
 
-    def get_email(self, email):
+    def get_email(self):
         return self.email
 
     def change_email(self, email):
@@ -106,6 +118,10 @@ class Account(Base):
         self.login_attempts += 1
         session.commit()
 
+    def exists(self):
+        session.query(Account).filter(Account.username == self.username,
+                                      Account.password == self.password).one()
+
 class Client(Base):
     __tablename__ = "Clients"
     client_id = Column(Integer, primary_key=True)
@@ -115,19 +131,27 @@ class Client(Base):
     EGN = Column(String, unique=True)
 
     def add(self):
-        session.add(self)
-        session.commit()
+        failed = True
+        while failed:
+            self.client_id = randint(SMALLEST_NUMBER, BIGGEST_NUMBER)
+            try:
+                session.add(self)
+                session.commit()
+                failed = False
+            except Exception:
+                failed = True
 
 
     def exists(self):
         try:
-            session.query(Client).filter(Client.firstname==self.firstname,
-                                          Client.secondname==self.secondname,
-                                          Client.lastname==self.lastname,
-                                          Client.EGN==self.EGN).one()
+            a = session.query(Client.client_id).filter(Client.firstname==self.firstname,
+                                                       Client.secondname==self.secondname,
+                                                       Client.lastname==self.lastname,
+                                                       Client.EGN==self.EGN).one()
         except NoResultFound:
             return False
-        return True
+        return a[0]
+
     def get_client_id(self):
         return self.client_id
 
@@ -136,6 +160,27 @@ class Client(Base):
 
     def get_info(self):
         return self.get_name() + ' ' + self.EGN
+
+
+def convert_to_Account(logged_user):
+          return Account(client_id=logged_user[0], 
+                    username=logged_user[1],
+                    balance=logged_user[2],                                                          password=logged_user[3],
+                    message=logged_user[4],
+                    email=logged_user[5],                                                            last_logged_in=logged_user[6],
+                    last_login_attempt=logged_user[7],
+                    login_attempts = logged_user[8])
+
+
+
+
+
+
+
+
+
+
+
 
 engine = create_engine("sqlite:///bank.db")
 Base.metadata.create_all(engine)

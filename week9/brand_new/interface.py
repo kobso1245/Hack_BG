@@ -1,15 +1,4 @@
-import sqlite3
-import sql_manager
-import random
-import smtplib
-import string
-from money_and_email import connect, withdraw_money, get_balance, get_email, set_email, show_email, change_password_query
-from settings import DATABASE_NAME
-from querries import WITHDRAW_MONEY, GET_MONEY_AMMOUNT, CHANGE_PASSWORD, SET_EMAIL, GET_EMAIL_QUERY
-import getpass as gp
-from sending_settings import RECEIVER_EMAIL ,SENDER_EMAIL, SENDER_PASSWORD, SERVER, PORT
-
-
+for logic import register_new_client, register_new_account
 
 def wrapped_reset_password(logged_user):
     new_pass = generate_new_password()
@@ -62,6 +51,36 @@ def print_all_commands():
     print("change-message - for changing users message")
     print("show-message - for showing users message")
 
+def register_account_info():
+    username = input("Please write down the username you would like to use: ")
+    password = input("Please write down the password you would like to use: ")
+    email = input("Please write down the email you would like to use: ")
+    firstname = input("Please write down your first name: ")
+    middlename = input("Please write down your middle name: ")
+    lastname = input("Please write down your last name: ")
+    EGN = input("Please write down your EGN: ")
+
+    return {"username": username
+            "password": password,
+            "email": email,
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "EGN": EGN
+            }
+
+
+def register_client_info():
+    firstname = input("Please write down your first name: ")
+    middlename = input("Please write down your middle name: ")
+    lastname = input("Please write down your last name: ")
+    EGN = input("Please write down your EGN: ")
+
+    return {"firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "EGN": EGN
+            }
 
 def main_menu():
     print("Welcome to our bank service. You are not logged in. \nPlease register or login")
@@ -69,27 +88,44 @@ def main_menu():
     while True:
         command = input("$$$>")
 
-        if command == 'register':
-            result = print_username_password()
-            username = result['username']
-            password = result['password']
-            inp = sql_manager.register(username, password)
-            if inp == True:
-                print("Registration Successfull")
-            else:
-                print(inp['reason'])
+        if command == 'register-account':
+            result = register_account_info()
+            reg = register_new_account(result['username'],
+                                       result['password'],
+                                       result['email'],
+                                       result['firstname'],
+                                       result['middlename'],
+                                       result['lastname'],
+                                       result['EGN'])
+            print(reg['reason'])
+
+        elif command == 'register-client':
+            result = register_client_info()
+            reg = register_new_client(result['firstname'],
+                                      result['middlename'],
+                                      result['lastname'],
+                                      result['EGN'])
+            print(reg['reason'])
+
         elif command == 'login':
             result = print_username_password()
             username = result['username']
             password = result['password']
 
-            logged_user = sql_manager.login(username, password)
+            can_log_in = True
+            try:
+                logged_user = Account(username=username,
+                                      password=password).exists()
+                logged_user = convert_to_Account(logged_user)
+                logged_user.incr_login_attempts()
+            except Exception:
+                can_log_in = False
 
-            if logged_user:
+            if can_log_in:
                 logged_menu(logged_user)
             else:
                 print("Login failed")
-
+###############################################################
         elif command == 'help':
             print_help()
         elif command == 'exit':
@@ -121,36 +157,40 @@ def logged_menu(logged_user):
     while True:
         command = input("Logged>>")
 
-
         if command == 'info':
             print_info()
+
         elif command == 'changepass':
+            old_pass = input("Please enter your old password: ")
             new_pass = input("Enter your new password: ")
-            inp = sql_manager.change_pass(new_pass, logged_user)
-            if inp == True:
-                print("Password changed sucessfully!!")
-            else:
-                print(inp['reason'])
+            inp = logged_user.change_password(old_pass, new_pass)
+            print(inp['reason'])
+
         elif command == 'reset-password':
             wrapped_reset_password(logged_user)
+        
         elif command == 'set-email':
             mail = input("Please enter your email: ")
-            set_email(logged_user.get_username(), mail)
+            logged_user.change_email(mail)
 
         elif command == 'show-email':
-            print(show_email(logged_user.get_username()))
+            print(logged_user.get_email())
 
         elif command == 'show-balance':
-            print("Current balance is: {}".format(get_balance(logged_user.get_username())))
+            print("Current balance is: {}".format(logged_user.get_balance())
 
         elif command == 'withdraw':
-            wrapped_withdraw(logged_user)
+            ammount = input("Please enter the ammount to withdraw: ")
+            logged_user.withdraw_money(ammount)
+
         elif command == 'deposit':
-            wrapped_deposit(logged_user)
+            ammount = input("Please enter the ammount to deposit: ")
+            logged_user.deposit_money(ammount)
+ 
 
         elif command == 'change-message':
             new_message = input("Enter your new message: ")
-            sql_manager.change_message(new_message, logged_user)
+            logged_user.change_message(new_message)
 
         elif command == 'show-message':
             print(logged_user.get_message())
@@ -160,7 +200,7 @@ def logged_menu(logged_user):
 
         elif command == 'help':
             print_all_commands()
-
+##############################################################
 def main():
     sql_manager.create_clients_table()
     main_menu()
