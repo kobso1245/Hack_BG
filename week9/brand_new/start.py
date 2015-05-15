@@ -1,4 +1,15 @@
 from Client import *
-s = Client(username="Dadada", balance=50)
+s = Account(username="Dadada", balance=50, password="kobso1245", client_id=2)
 s.add()
 s.withdraw_money(20)
+print(s.balance)
+s.deposit_money(50)
+print(s.balance)
+s.change_password("kobso1245","testing124567")
+s.change_message("dadad")
+s.change_email("kalata1245")
+s2 = Account(username="Tester", balance=40, password="kalata1245")
+s2.add()
+
+cl1 = Client(client_id = 5, firstname="Kaloqn",lastname="Evtimov")
+cl1.add()
