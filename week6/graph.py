@@ -7,7 +7,10 @@ class DirectedGraph:
 
     def add_edge(self, start, end):
         if start in self.__nodes.keys():
-            self.__nodes[start].append(end)
+            if end not in self.__nodes[start]:
+                self.__nodes[start].append(end)
+            else:
+                return
         else:
             self.__nodes[start] = [end]
 

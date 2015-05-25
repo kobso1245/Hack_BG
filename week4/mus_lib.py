@@ -271,18 +271,25 @@ with ',' between them: """)
 
             if "pl" in inp and not self.__curr_proc:
                 if inp != "pl":
-                    sng_n = int(inp.split(" ")[1] - 1)
-                    self.__playing = self.__curr_playlist.show_songs()[sng_n]
-                self.__curr_proc = play(self.__playing.path())
-                print(tabulate([[self.__playing.artist(),
-                                 self.__playing.title(),
-                                 self.__playing.length(seconds=False)]],
-                               headers=["Artist", "Song", "Length"],
-                               tablefmt="grid"))
+                    second = inp.split(' ')[1]
+                    if "-all" in second:
+                        song = self.__curr_playlist.next_song()
+                        while type(song) is Song:
+                            self.__curr_proc = play(song.path())
+                            self.__curr_proc.wait(timeout=300)
+                            song = self.__curr_playlist.next_song()
+                    else:
+                        sng_n = int(inp.split(" ")[1] - 1)
+                        self.__playing = self.__curr_playlist.show_songs()[sng_n]
+                self.Play()
 
             if inp == "s" and self.__curr_proc:
                 stop(self.__curr_proc)
                 self.__curr_proc = 0
+
+            if inp == "test":
+                print(self.__curr_proc.poll())
+
 
             if inp == "n":
                 try:
@@ -360,6 +367,14 @@ want to add and put ',' between them: """)
             self.__all_songs = self.__curr_playlist
             self.__playlists.append(self.__all_songs)
             self.__playing = self.__playlists[0].next_song()
+
+    def Play(self):
+                self.__curr_proc = play(self.__playing.path())
+                print(tabulate([[self.__playing.artist(),
+                                 self.__playing.title(),
+                                 self.__playing.length(seconds=False)]],
+                               headers=["Artist", "Song", "Length"],
+                               tablefmt="grid"))
 
 
 def play(mp3Path):

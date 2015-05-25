@@ -29,10 +29,7 @@ class BillBatch:
         self.bills = deepcopy(bills)
 
     def total(self):
-        tot = 0
-        for bill in self.bills:
-            tot += bill.ammount
-        return tot
+        return sum([int(bill) for bill in self.bills])
 
     def toDict(self):
         return {int(elem): self.bills.count(elem) for elem in self.bills}

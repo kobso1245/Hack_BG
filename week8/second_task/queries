@@ -1,0 +1,84 @@
+1)SELECT  FirstName, LastName, Title
+FROM employees;
+
+2)SELECT *
+FROM employees
+WHERE City LIKE "Seattle";
+
+3)SELECT *
+FROM employees
+WHERE City LIKE "London";
+
+4)
+
+5)SELECT  *
+FROM employees
+WHERE Title LIKE "%Sales%" 
+AND TitleOfCourtesy  IN ("Ms.", "Mrs.")
+
+6)SELECT  *
+FROM employees
+ORDER BY BirthDate ASC
+LIMIT 5;
+
+7)SELECT  *
+FROM employees
+ORDER BY HireDate ASC
+LIMIT 5;
+
+8)SELECT *
+FROM employees
+WHERE ReportsTo is Null
+
+9)SELECT a.FirstName, a.LastName, b.FirstName, b.LastName
+FROM employees AS a
+JOIN employees AS b
+ON b.EmployeeID = a.ReportsTo
+
+10)SELECT  COUNT(EmployeeID)
+FROM employees
+WHERE Title LIKE "%Sales%" 
+AND TitleOfCourtesy  IN ("Ms.", "Mrs.")
+
+11)
+
+12)SELECT City, COUNT(EmployeeID)
+FROM employees
+GROUP BY City;
+
+13)SELECT OrderID, FirstName, LastName
+FROM Orders
+JOIN Employees
+ON Employees.EmployeeID = Orders.EmployeeID
+
+14)SELECT OrderID, CompanyName
+FROM Orders
+JOIN Shippers
+ON Orders.ShipVia = Shippers.ShipperID
+
+15)SELECT ShipCountry, COUNT(OrderID)
+FROM Orders
+GROUP BY ShipCountry
+
+16)SELECT EmployeeID, COUNT(EmployeeID)
+FROM Orders
+GROUP BY EmployeeID
+
+16)SELECT EmployeeID, COUNT(EmployeeID) AS Counts
+FROM Orders
+GROUP BY EmployeeID
+ORDER BY  Counts DESC
+LIMIT 1
+
+18)SELECT OrderID, ContactName AS CustomerName, FirstName, LastName
+FROM Orders
+JOIN Customers
+JOIN Employees
+ON Orders.CustomerID = Customers.CustomerID AND Orders.EmployeeID = Employees.EmployeeID
+
+19)SELECT OrderID, ContactName, Shippers.CompanyName
+FROM Orders
+JOIN Customers
+ON Orders.CustomerID = Customers.CustomerID
+JOIN Shippers
+ON Orders.ShipVia = Shippers.ShipperID

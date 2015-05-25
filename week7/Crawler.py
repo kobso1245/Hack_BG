@@ -5,18 +5,60 @@ import sqlite3
 from Histogram import Histogram
 
 
+
+def recover_links(database):
+
+    qlite3.connect(database)
+    cursor = conn.cursor()
+    conn.row_factory = sqlite3.Row
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS links(url TEXT PRIMARY KEY)
+    """
+    cursor.execute(create_table_query)
+    conn.commit()
+
+    passed = set()
+
+    get_passed = """
+    SELECT url FROM links
+    """
+    req = cursor.execute(get_passed)
+    conn.commit()
+    data = req.fetchall()
+
+    conn.close()
+    for row in data:
+        passed.add(tuple(row)[0])
+    
+    return passed
+
+
+
 def get_links(website):
+
+
     try:
-        req = requests.get(website)
+        req = requests.get(website, timeout=2)
     except Exception:
         return []
     bs = BeautifulSoup(req.text)
     all_links = []
+    
+
     for link in bs.find_all('a'):
         curr_link = link.get("href")
-        if type(curr_link) is not type(None) and  curr_link[:4] == 'link':
-            curr_link = website  + curr_link
+        if type(curr_link) is not type(None) and 'link.php' in curr_link:  #curr_link[:4] == 'link':
+            if curr_link[:4] == 'link':
+                webs = website.split('/')
+                if type(webs) is not type(None) and  len(webs) >=3:
+                    website = webs[0] + '//' + webs[2]+'/'
+                curr_link = website + curr_link
             all_links.append(curr_link)
+
+    if website == 'http://register.start.bg':
+        print("daaaaaaaaaaaaaa")
+        print(all_links)
+
 
     return all_links
 
@@ -108,19 +150,42 @@ def get_histogram(all_links):
     return hist
 
 
-def links(website):
+def links(website, links_all, passed, conn, cursor):
+    to_be_added = []
     curr_links = get_links(website)
+    for link in curr_links:
+        links_all.add(link)
+        to_be_added.append(link,)
+    #print(curr_links)
+
+    if to_be_added != []:
+        add_query = '''
+        INSERT INTO links(url)
+        VALUES(?)
+        '''
+        cursor.executemany(add_query, to_be_added)
+        conn.commit()
+
     if len(curr_links) == 0:
         return [] 
     else:
         for link in curr_links:
-            return curr_links + links(link)
+            if link != website:
+                print(link)
+                links(link, links_all, passed, conn, cursor)
 
 def craw(website, save_to):
     make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
-    all_links = []
-    all_links = links(website)
+    all_links = set()
+    passed = recover_links("website.db")
+
+    qlite3.connect("website.db")
+    cursor = conn.cursor()
+    conn.row_factory = sqlite3.Row
+
+
+    links(website, all_links, passed, conn, cursor)
     #all_links = get_links(website)
-    print(all_links)
+    #print(all_links)
     hist = get_histogram(all_links)
     save_file(save_to, hist)

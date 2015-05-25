@@ -23,12 +23,10 @@ class Account(Base):
     balance = Column(Float) 
     password = Column(String)
     message = Column(String)
-    email = Column(String)
+    email = Column(String, unique=True)
     last_logged_in = Column(DateTime)
     last_login_attempt = Column(DateTime)
     login_attempts = Column(Integer)
-    #clients = relationship("Client")
-
 
     def add(self):
         session.add(self)
@@ -39,7 +37,6 @@ class Account(Base):
 
     def get_balance(self):
         return self.balance
-
     def get_id(self):
         return self.id
 
@@ -49,7 +46,7 @@ class Account(Base):
 
     def change_password(self,old_password, new_password):
         if self.password == old_password:
-            self.password = new_password
+            self.password = "dadad"
             session.commit()
         else:
             return {"result": False,
@@ -108,6 +105,7 @@ class Account(Base):
         return self.last_login_attempt
 
     def set_last_logged_in_attempt(self, time):
+
         self.last_login_attempt = time
         session.commit()
 
@@ -118,9 +116,11 @@ class Account(Base):
         self.login_attempts += 1
         session.commit()
 
+    def exists_with_email(self):
+        return session.query(Account).filter(Account.username == self.username, Account.email == self.email).one()
+
     def exists(self):
-        session.query(Account).filter(Account.username == self.username,
-                                      Account.password == self.password).one()
+        return session.query(Account).filter(Account.username == self.username, Account.password == self.password).one()
 
 class Client(Base):
     __tablename__ = "Clients"
