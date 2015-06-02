@@ -200,6 +200,7 @@ class MusicCrawler:
         self.__playlst = Playlist(name)
 
     def gen(self, path):
+        dirs=[]
         try:
             dirs = os.listdir(path)
         except FileNotFoundError as error:
