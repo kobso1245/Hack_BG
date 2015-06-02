@@ -214,5 +214,3 @@ if __name__ == '__main__':
     tst = Panda("dadadada", "te@gmail.com", "male")
     print(tst.name())
 
-
-
