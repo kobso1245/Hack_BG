@@ -78,12 +78,3 @@ class SocialNetwork:
             if follower not in self.__visited:
                 self._dfs_level(level - 1, follower)
 
-
-if __name__ == "__main__":
-    soc = SocialNetwork("da")
-    #social = soc.get_network_for("RadoRado")
-    #print(json.dumps(social, indent=4))
-    #print(len(social['followers']))
-    #print(len(social['following']))
-    social = soc.make_graph("kobso1245", 2)
-    print(json.dumps(soc._SocialNetwork__graph._DirectedGraph__nodes, indent = 4))
