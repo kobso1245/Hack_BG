@@ -8,7 +8,7 @@ STANDARD_FOLLOWING = "https://api.github.com/users/{}/following?page={}&client_i
 
 def get_id_and_secret(filename):
     jsoned = json.loads(open(filename).read())
-    return (jsoned['client_id'], jsoned['client_secret'])
+    return (jsoned['client_id'], jsoned['client_secret'], jsoned['client_name'])
 
 class SocialNetwork:
     def __init__(self, name):
@@ -18,7 +18,7 @@ class SocialNetwork:
 
     def get_lab(self):
         id_sec = get_id_and_secret("client.json")
-        req = requests.get("https://api.github.com/users/kobso1245?client_id={}&client_secret={}".format(id_sec[0], id_sec[1])).json()
+        req = requests.get("https://api.github.com/users/{2}?client_id={0}&client_secret={1}".format(id_sec[0], id_sec[1], id_sec[2])).json()
         return req
 
     def add_level(self):
