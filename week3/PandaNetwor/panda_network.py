@@ -206,11 +206,4 @@ class PandaSocialNetwork:
         for panda in pandas:
             print(panda)
 
-if __name__ == '__main__':
-    panda_ntw = PandaSocialNetwork()
-    panda_ntw.load_from('dada1.json')
-    panda_ntw.add_panda(Panda("Test", "test@pandamail.com", "male"))
-    panda_ntw.show_pandas()
-    tst = Panda("dadadada", "te@gmail.com", "male")
-    print(tst.name())
 
