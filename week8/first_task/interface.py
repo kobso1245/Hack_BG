@@ -94,8 +94,3 @@ def get_student_with_most_courses():
     max_elem = get_max_count(ids)
     return get_student_name_from_id(conn, cursor, max_elem)
 
-
-
-if __name__ == '__main__':
-    #print(get_max_count([1,2,3,5,7,8,1,8,2,7,1,9,1]))
-    print(get_all_students_with_their_courses())
