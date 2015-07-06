@@ -2,7 +2,7 @@ import requests
 import json
 from graph import *
 
-STANDARD_FOLLOWERS = "htps://api.github.com/users/{}/followers?page={}&client_id={}&client_secret={}"
+STANDARD_FOLLOWERS = "https://api.github.com/users/{}/followers?page={}&client_id={}&client_secret={}"
 STANDARD_FOLLOWING = "https://api.github.com/users/{}/following?page={}&client_id={}&client_secret={}"
 
 
