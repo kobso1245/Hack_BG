@@ -1,10 +1,19 @@
 import sqlite3
+import json
+
+try:
+    settings = open("settings.json")
+    data = json.load(settings)
+except Exception:
+    print('Settings file not found!')
+
+DATABASE = data['database']
 
 create_table_query = """
 CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT, monthly_salary int, year_bonus int, position TEXT)
 """
 
-conn = sqlite3.connect("company.db")
+conn = sqlite3.connect(DATABASE)
 cursor = conn.cursor()
 cursor.execute(create_table_query)
 

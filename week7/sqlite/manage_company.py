@@ -1,6 +1,13 @@
 import sqlite3
+import json
 
-DATABASE = "company.db"
+try:
+    settings = open("settings.json")
+    data = json.load(settings)
+except Exception:
+    print("Settings file not found!")
+
+DATABASE = settings['database']
 
 def make_connection(name):
     conn = sqlite3.connect(name)
@@ -36,13 +43,8 @@ def add_employee(data):
     cursor = conn.cursor()
     query = """
     INSERT INTO users(name, monthly_salary, year_bonus, position)
-    VALUES({}, {}, {}, {})
-    """.format(data[0], data[1], data[2], data[3])
-
-    cursor.execute(query)
+    VALUES(?, ?, ?, ?)
+    """
+    cursor.execute(query, (data[0], data[1], data[2], data[3]))
     conn.commit()
 
-if __name__ == '__main__':
-    data = ['Ivo Ivo', 10000, 100000, 'CEO']
-    #print(yearly_spending())
-    add_employee(data)
