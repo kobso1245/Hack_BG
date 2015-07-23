@@ -30,7 +30,7 @@ class Panda:
         if not re.match(r'\w[\w\.-]*@\w[\w\.-]+\.\w+', email):
             print("Wrong email!")
             return
-        if not gender.lower() == 'male' or gender.lower() == 'female':
+        if not (gender.lower() == 'male' or gender.lower() == 'female'
             print("Wrong gender!")
             return
         self.__name = name
@@ -207,17 +207,4 @@ class PandaSocialNetwork:
             print(panda)
 
 def test():
-    gosho = Panda("Ivo", "ivo@mail.bg", "male")
-    panda_ntw = PandaSocialNetwork()
-    panda_ntw.add_panda(gosho)
-    gosho2 = Panda("Ivo2", "iv2o@mail.bg", "male")
-    gosho3 = Panda("Ivo3", "iv2o3@mail.bg", "male")
-    
-    panda_ntw.add_panda(gosho2)
-    panda_ntw.add_panda(gosho3)
-    print(panda_ntw.get_pandas_list())
-    panda_ntw.make_friends(gosho, gosho2)
-    panda_ntw.make_friends(gosho3, gosho2)
-    
-    print(panda_ntw.are_friends(gosho, gosho2))
-    print(panda_ntw.connection_level(gosho, gosho3))
+

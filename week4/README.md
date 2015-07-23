@@ -4,3 +4,4 @@ where music could be stored on your machine
 in the followig format:
 /path/to/music/files
 in the config file
+You also need mpg123 installed in order to play music!
