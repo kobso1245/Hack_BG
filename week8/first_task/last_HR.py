@@ -161,16 +161,3 @@ def make_third_table(conn, cursor, people):
     conn.commit()
 
 
-
-if __name__ == '__main__':
-    #print(get_all_courses_names(get_data_to_json("https://hackbulgaria.com/api/students/")))
-    #people, courses = get_all_data("https://hackbulgaria.com/api/students/") 
-    people, courses = get_from_file("new_data3.json")
-    #make_tables()
-    conn, cursor = add_info_to_tables(people, courses)
-    make_third_table(conn, cursor, people)
-    #print(json.dumps(courses, indent=4))
-
-
-
-
