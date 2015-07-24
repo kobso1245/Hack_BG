@@ -1,0 +1,6 @@
+RECEIVER_EMAIL = ""
+SENDER_EMAIL = ""
+SENDER_PASSWORD = ""
+SERVER = ""
+PORT = ""
+

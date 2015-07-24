@@ -149,3 +149,6 @@ Implement a command, called ```get-tan``` that does the following thing:
 * Emails the user a list of 10 unique TAN codes, that he can use for his next 10 transactions
 * If the command is called again, it says : `You have 10 remaining TAN codes to use` where 10 can be any number between 1 and 10
 * If there are 0 TAN codes remaining, generate 10 new for that user and email them to him!
+
+
+* Make sure you add all the info needed to sending_settings.py module so this can be used!
