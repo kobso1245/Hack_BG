@@ -3,6 +3,11 @@ import requests
 import json
 import sqlite3
 from Histogram import Histogram
+try:
+    DATABASE = json.load(open('settings.json'))['DATABASE']
+except Exception:
+    print('File settings.json not found!')
+
 
 
 def get_links(website):
@@ -88,7 +93,7 @@ def get_histogram(all_links):
 
     #connections
     cnt = 0
-    conn = sqlite3.connect("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     update_query = '''
@@ -186,7 +191,7 @@ def links(website, links_all, poseteni, database_to_add, to_be_added,cursor, con
 
 
 def craw(website, save_to):
-    conn, cursor, in_database = make_table("/home/kaloyan/Documents/Hack_Bulgaria/week7/websites.db")
+    conn, cursor, in_database = make_table(DATABASE)
     all_links = set()
     poseteni = set()
     to_be_added = []
