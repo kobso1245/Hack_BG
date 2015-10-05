@@ -11,5 +11,5 @@ except Exception:
 
 
 if __name__ == '__main__':
-    craw("http://register.start.bg/","histogram2")
+    craw("http://register.start.bg/", "histogram2")
     plot(database)

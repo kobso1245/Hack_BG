@@ -10,10 +10,11 @@ MSG = {'cr8': "Account was created",
 
 
 class BankAccount:
+
     def __init__(self, name, balance, currency):
         if balance < 0:
             raise ValueError
-        if not (type(name) is str and type(currency) is str):
+        if not (isinstance(name, str) and isinstance(currency, str)):
             raise TypeError
         self.__name = name
         self.__balance = balance
@@ -27,7 +28,7 @@ class BankAccount:
         return self.__balance
 
     def deposit(self, amount):
-        if not(type(amount) is int or type(amount) is float):
+        if not(isinstance(amount, int) or isinstance(amount, float)):
             raise TypeError
         if amount <= 0:
             raise ValueError
@@ -38,8 +39,8 @@ class BankAccount:
 
     def balance(self):
         self.__history.append(MSG['blnchk'].format(
-                                                   self.__balance,
-                                                   self.__currency))
+            self.__balance,
+            self.__currency))
         return self.__balance
 
     def currency(self):
@@ -49,7 +50,7 @@ class BankAccount:
         return self.__name
 
     def incr_balance(self, amount):
-        if not(type(amount) is int or type(amount) is float):
+        if not(isinstance(amount, int) or isinstance(amount, float)):
             raise TypeError
         if amount <= 0:
             raise ValueError
@@ -61,9 +62,9 @@ class BankAccount:
     def transfer_to(self, account, amount):
         if self.__currency != account.currency():
             return False
-        if not(type(account) is BankAccount):
+        if not(isinstance(account, BankAccount)):
             raise TypeError
-        if not(type(amount) is int or type(amount) is float):
+        if not(isinstance(amount, int) or isinstance(amount, float)):
             raise TypeError
         if self.__balance < amount:
             return False
@@ -76,7 +77,7 @@ class BankAccount:
         return True
 
     def withdraw(self, amount):
-        if not(type(amount) is int or type(amount) is float):
+        if not(isinstance(amount, int) or isinstance(amount, float)):
             raise TypeError
         if amount <= self.__balance:
             self.__balance -= amount
@@ -90,13 +91,11 @@ class BankAccount:
 
     def __str__(self):
         return MSG['__str__'].format(
-                self.__name, self.__balance, self.__currency)
+            self.__name, self.__balance, self.__currency)
 
     def history(self):
         return self.__history
 
 
-
 def tst():
     return 42
-

@@ -49,7 +49,8 @@ def to_digits(n):
 def next_hack(n):
     nxt = n + 1
     while nxt:
-        if pallindrome(bin(nxt)[2:]) and str(bin(nxt)[2:]).count('1') % 2 != 0:
+        if pallindrome(bin(nxt)[2:]) and str(
+                bin(nxt)[2:]).count('1') % 2 != 0:
             return nxt
         else:
             nxt += 1
@@ -110,7 +111,7 @@ def char_histogram(str1):
 def rev(n):
     out_num = 0
     while n != 0:
-        out_num = out_num*10 + n % 10
+        out_num = out_num * 10 + n % 10
         n = n // 10
     return out_num
 
@@ -123,14 +124,14 @@ def p_score(n):
 
 
 def is_increasing(seq):
-    for i in range(0, len(seq)-1):
+    for i in range(0, len(seq) - 1):
         if seq[i] >= seq[i + 1]:
             return False
     return True
 
 
 def is_decreasing(seq):
-    for i in range(0, len(seq)-1):
+    for i in range(0, len(seq) - 1):
         if seq[i] > seq[i + 1]:
             return True
     return False

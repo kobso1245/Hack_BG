@@ -1,10 +1,23 @@
 import unittest
 from mus_lib import Song, Playlist
 
+
 class SongTester(unittest.TestCase):
+
     def setUp(self):
-        self.song = Song(title="Odin", artist="Manowar", album="The Sons of Odin", length="3:44", path="")
-        self.song1 = Song(title="Odin", artist="Manowar", album="The Sons of Odin", length="3:44", path="")
+        self.song = Song(
+            title="Odin",
+            artist="Manowar",
+            album="The Sons of Odin",
+            length="3:44",
+            path="")
+        self.song1 = Song(
+            title="Odin",
+            artist="Manowar",
+            album="The Sons of Odin",
+            length="3:44",
+            path="")
+
     def test___str__return(self):
         elem = "Manowar - Odin from The Sons of Odin - 3:44"
         self.assertEqual(str(self.song), elem)
@@ -12,26 +25,53 @@ class SongTester(unittest.TestCase):
     def test__str_return_not_work(self):
         elem = "Test - Odin from The Sons of Odin - 3:44"
         self.assertNotEqual(str(self.song), elem)
-    
+
     def test_if___eq__works(self):
         self.assertTrue(self.song == self.song1)
 
     def test__hash__works(self):
         dct = {}
         dct[self.song] = self.song1
-    
+
     def test_length_seconds(self):
         self.assertEqual(self.song.length(seconds=True), 224)
+
+
 class TestPlaylist(unittest.TestCase):
+
     def setUp(self):
-        self.song = Song(title="Odin", artist="Manowar", album="The Sons of Odin", length="3:44")
+        self.song = Song(
+            title="Odin",
+            artist="Manowar",
+            album="The Sons of Odin",
+            length="3:44")
         self.playlst = Playlist(name="Code")
-        self.song1 = Song(title="New odin", artist="Manowar", album="The Sons of Odin", length="1")
-        self.song2 = Song(title="New odin temple", artist="Manowar", album="The Sons of Odin5", length="2:50")
-        self.song3 = Song(title="New odin tester", artist="Manowar", album="The Sons of Odin4", length="3:20")
-        self.song4 = Song(title="New odin odin", artist="Manowar", album="The Sons of Odin2", length="3:30")
-        self.song5 = Song(title="New odin much odin", artist="Manowar", album="The Sons of Odin3", length="3:25")
-        
+        self.song1 = Song(
+            title="New odin",
+            artist="Manowar",
+            album="The Sons of Odin",
+            length="1")
+        self.song2 = Song(
+            title="New odin temple",
+            artist="Manowar",
+            album="The Sons of Odin5",
+            length="2:50")
+        self.song3 = Song(
+            title="New odin tester",
+            artist="Manowar",
+            album="The Sons of Odin4",
+            length="3:20")
+        self.song4 = Song(
+            title="New odin odin",
+            artist="Manowar",
+            album="The Sons of Odin2",
+            length="3:30")
+        self.song5 = Song(
+            title="New odin much odin",
+            artist="Manowar",
+            album="The Sons of Odin3",
+            length="3:25")
+
     def test_add_song(self):
         self.playlst.add_song(self.song)
         self.assertTrue(self.song in self.playlst.show_songs())
@@ -83,6 +123,5 @@ class TestPlaylist(unittest.TestCase):
             playlist1.next_song()
 
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     unittest.main()

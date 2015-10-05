@@ -1,4 +1,5 @@
 class DirectedGraph:
+
     def __init__(self):
         self.__nodes = {}
 
@@ -39,4 +40,3 @@ class DirectedGraph:
             return True
         else:
             return False
-

@@ -2,6 +2,7 @@ THE_ANSWER_OF_EVERYTHING = 42
 import calendar
 from math import log
 
+
 def count_words(input_strings):
     return {name: input_strings.count(name) for name in input_strings}
 
@@ -54,7 +55,7 @@ def max_consecutive(items):
 
 def groupby(func, seq):
     return{result: [elem for elem in seq
-           if func(elem) == result] for result
+                    if func(elem) == result] for result
            in set([func(elem) for elem in seq])}
 
 
@@ -73,12 +74,12 @@ def doubler(n, poss):
         poss = poss + 1
         return n
     else:
-        if 2*n < 10:
+        if 2 * n < 10:
             poss += 1
-            return 2*n
+            return 2 * n
         else:
             poss += 1
-            return (((2*n) % 10) + ((2*n) // 10))
+            return (((2 * n) % 10) + ((2 * n) // 10))
 
 
 def is_credit_card_valid(number):
@@ -94,14 +95,14 @@ def is_credit_card_valid(number):
 def is_prime(n):
     if n <= 1:
         return False
-    for i in range(2, n//2 + 1):
+    for i in range(2, n // 2 + 1):
         if n % i == 0:
             return False
     return True
 
 
 def goldbach(n):
-    return [(x, n - x) for x in range(2, n//2 + 1)
+    return [(x, n - x) for x in range(2, n // 2 + 1)
             if is_prime(x) and is_prime(n - x)]
 
 
@@ -119,7 +120,7 @@ def magic_square(matr):
     length = len(matr)
     cols = [sum([matr[i][j] for i in range(length)]) for j in range(length)]
     cols.extend([sum([matr[i][i] for i in range(length)]),
-                sum([matr[i][length-i-1] for i in range(length)])])
+                 sum([matr[i][length - i - 1] for i in range(length)])])
     cols.extend([sum(row) for row in matr])
     return len(set(cols)) == 1
 
@@ -166,7 +167,7 @@ def reduce_file_path(path):
                 output.pop()
         else:
             output.append(top)
-    return "/"+"/".join(output)
+    return "/" + "/".join(output)
 
 
 def is_leap_year(year):
@@ -178,4 +179,4 @@ def is_leap_year(year):
 
 def friday_years(start, end):
     return sum([1 for elem in[year for year in range(start, end + 1)
-               if calendar.weekday(year, 1, 1) in is_leap_year(year)]])
+                              if calendar.weekday(year, 1, 1) in is_leap_year(year)]])

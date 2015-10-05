@@ -6,14 +6,21 @@ import random
 from sqlalchemy.orm.exc import NoResultFound
 import string
 
+
 def generate_new_password():
-    n=random.randint(15, 20)
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(n))
+    n = random.randint(15, 20)
+    return ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase +
+            string.digits) for _ in range(n))
+
 
 def wrapper_reset_password(username, email):
     new_pass = generate_new_password()
     try:
-        logged_user = Account(username=username, email=email).exists_with_email()
+        logged_user = Account(
+            username=username,
+            email=email).exists_with_email()
     except NoResultFound:
         return {'result': False,
                 'reason': "No account found!"}
@@ -34,6 +41,7 @@ def send_reset_password(receiver, new_password):
     server.login(SENDER_EMAIL, SENDER_PASSWORD)
     server.sendmail(SENDER_EMAIL, [TO], TEXT)
 
+
 def hash_them_things(thing):
     hash_object = hashlib.sha512(thing.encode())
     return hash_object.hexdigest()
@@ -41,9 +49,9 @@ def hash_them_things(thing):
 
 def register_new_client(firstname, middlename, lastname, EGN):
     cl = Client(firstname=firstname,
-           secondname=middlename,
-           lastname=lastname,
-           EGN=EGN)
+                secondname=middlename,
+                lastname=lastname,
+                EGN=EGN)
     try:
         cl.add()
     except Exception:
@@ -55,12 +63,20 @@ def register_new_client(firstname, middlename, lastname, EGN):
             "reason": "Client registered successfully!"
             }
 
-def register_new_account(username, password, email, firstname, middlename, lastname, EGN):
+
+def register_new_account(
+        username,
+        password,
+        email,
+        firstname,
+        middlename,
+        lastname,
+        EGN):
     cl_id = Client(firstname=firstname,
-              secondname=middlename,
-              lastname=lastname,
-              EGN=EGN)
-    
+                   secondname=middlename,
+                   lastname=lastname,
+                   EGN=EGN)
+
     exist = cl_id.exists()
     if exist:
         acc = Account(client_id=exist, username=username,
@@ -80,5 +96,3 @@ def register_new_account(username, password, email, firstname, middlename, lastn
         return {"result": False,
                 "reason": "No client with this information found!"
                 }
-
-

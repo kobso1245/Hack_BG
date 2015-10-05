@@ -1,7 +1,9 @@
 import unittest
 from graph import *
 
+
 class TestGraph(unittest.TestCase):
+
     def setUp(self):
         self.gr = DirectedGraph()
         self.gr.add_edge("A", "B")
@@ -14,9 +16,9 @@ class TestGraph(unittest.TestCase):
 
     def test_has_road_true(self):
         self.assertTrue(self.gr.has_path_between("A", "D"))
+
     def test_has_road_false(self):
         self.assertFalse(self.gr.has_path_between("A", "K"))
 
 if __name__ == "__main__":
     unittest.main()
-

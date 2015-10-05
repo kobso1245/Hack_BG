@@ -15,7 +15,7 @@ class SqlManagerTests(unittest.TestCase):
 
     def tearDown(self):
         sql_manager.cursor.execute('DROP TABLE clients')
-    
+
     @classmethod
     def tearDownClass(cls):
         os.remove("bank.db")
@@ -23,7 +23,10 @@ class SqlManagerTests(unittest.TestCase):
     def test_register(self):
         sql_manager.register('Dinko', '123123')
 
-        sql_manager.cursor.execute('SELECT Count(*)  FROM clients WHERE username = (?) AND password = (?)', ('Dinko', '123123'))
+        sql_manager.cursor.execute(
+            'SELECT Count(*)  FROM clients WHERE username = (?) AND password = (?)',
+            ('Dinko',
+             '123123'))
         users_count = sql_manager.cursor.fetchone()
 
         self.assertEqual(users_count[0], 0)
@@ -31,12 +34,13 @@ class SqlManagerTests(unittest.TestCase):
     def test_register2(self):
         sql_manager.register('Dinko', 'adbV123123')
 
-        sql_manager.cursor.execute('SELECT Count(*)  FROM clients WHERE username = (?) AND password = (?)', ('Dinko', 'adbV123123'))
+        sql_manager.cursor.execute(
+            'SELECT Count(*)  FROM clients WHERE username = (?) AND password = (?)',
+            ('Dinko',
+             'adbV123123'))
         users_count = sql_manager.cursor.fetchone()
 
         self.assertEqual(users_count[0], 1)
-    
-
 
     def test_login(self):
         logged_user = sql_manager.login('Tester', 'adbV123')

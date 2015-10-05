@@ -2,6 +2,7 @@ from copy import deepcopy
 
 
 class Bill:
+
     def __init__(self, ammount):
         self.ammount = ammount
 
@@ -25,6 +26,7 @@ class Bill:
 
 
 class BillBatch:
+
     def __init__(self, bills):
         self.bills = deepcopy(bills)
 
@@ -45,6 +47,7 @@ class BillBatch:
 
 
 class CashDesk:
+
     def __init__(self):
         self.lst = {}
 
@@ -63,9 +66,6 @@ class CashDesk:
         return out
 
     def inspect(self):
-        to_pairs = [(key, self.lst[key]) for key in self.lst.keys()]
-        to_pairs.sort()
+        to_pairs = sorted([(key, self.lst[key]) for key in self.lst.keys()])
         for elem in to_pairs:
             print("{}$ bills  - {}".format(elem[0], elem[1]))
-
-

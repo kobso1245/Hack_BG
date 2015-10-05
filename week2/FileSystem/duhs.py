@@ -19,7 +19,7 @@ if __name__ == '__main__':
     name1, name2 = sys.argv
     size = getSize(name2)
     cnt = 0
-    dct = ['B','kB', 'MB', 'GB', 'TB']
+    dct = ['B', 'kB', 'MB', 'GB', 'TB']
     while (size / 1024) > 1:
         cnt += 1
         size /= 1024

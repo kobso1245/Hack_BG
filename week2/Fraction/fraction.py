@@ -1,4 +1,5 @@
 class Fraction:
+
     def __init__(self, numerator, denominator):
         den = 1
         if numerator != 0:
@@ -40,7 +41,7 @@ class Fraction:
 
 def gcd(a, b):
     if a > b:
-        return gcd(a-b, b)
+        return gcd(a - b, b)
     if a < b:
         return gcd(a, b - a)
     if a == b:

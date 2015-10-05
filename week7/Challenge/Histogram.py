@@ -1,4 +1,5 @@
 class Histogram:
+
     def __init__(self):
         self.__servers = []
 
@@ -15,7 +16,7 @@ class Histogram:
         return [(server, self.count(server)) for server in servers]
 
     def get_dict(self):
-        return {key: value for key,value in self.items()}
+        return {key: value for key, value in self.items()}
 
 
 if __name__ == '__main__':

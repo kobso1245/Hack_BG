@@ -3,12 +3,11 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy import create_engine
 
 
-
 Base = declarative_base()
 
 
 class Client(Base):
-    
+
     __tablename__ = 'clients'
     id = Column(Integer, primary_key=True)
     username = Column(String)
@@ -16,6 +15,7 @@ class Client(Base):
     email = Column(String)
     balance = Column(Integer)
     message = Column(String)
+
     def __init__(self, id, username, balance, message):
         self.__username = username
         self.__balance = balance

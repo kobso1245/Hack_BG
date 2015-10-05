@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 
 
 class Song:
+
     def __init__(self, title, artist, album, length, path=""):
         self.__title = title
         self.__artist = artist
@@ -35,7 +36,10 @@ class Song:
     def length(self, seconds=False):
         if seconds:
             return self.__length
-        return timedelta(seconds=self.__length, microseconds=0, milliseconds=0)
+        return timedelta(
+            seconds=self.__length,
+            microseconds=0,
+            milliseconds=0)
 
     def __eq__(self, other):
         return (self.__title == other.title() and
@@ -49,6 +53,7 @@ class Song:
 
 
 class Playlist:
+
     def __init__(self, name, repeat=False, shuffle=False):
         self.__name = name
         self.__repeat = repeat
@@ -76,7 +81,7 @@ class Playlist:
         self.__songs.remove(other)
 
     def add_songs(self, songs):
-        if type(songs) is Playlist:
+        if isinstance(songs, Playlist):
             lst_songs = songs.show_songs()
             for song in lst_songs:
                 self.add_song(song)
@@ -156,8 +161,15 @@ class Playlist:
             out_lst.append([i, elem.artist(), elem.title(), elem.length()])
             i = i + 1
 
-        print(tabulate(out_lst, headers=["Number", "Artist", "Song", "Length"],
-                       tablefmt="grid"))
+        print(
+            tabulate(
+                out_lst,
+                headers=[
+                    "Number",
+                    "Artist",
+                    "Song",
+                    "Length"],
+                tablefmt="grid"))
 
     def save(self, path=""):
         artists = {song.artist(): [] for song in self.__songs}
@@ -167,9 +179,16 @@ class Playlist:
                                                     song.length(),
                                                     song.path())))
         if path == "":
-            fl = open(self.__name.replace(" ", "-")+'.json', "w")
+            fl = open(self.__name.replace(" ", "-") + '.json', "w")
         else:
-            fl = open(path+"/"+self.__name.replace(" ", "-") + ".json", "w")
+            fl = open(
+                path +
+                "/" +
+                self.__name.replace(
+                    " ",
+                    "-") +
+                ".json",
+                "w")
         json.dump(artists, fl, indent=4)
         fl.close()
 
@@ -195,12 +214,13 @@ class Playlist:
 
 
 class MusicCrawler:
+
     def __init__(self, name, path):
         self.__path = path
         self.__playlst = Playlist(name)
 
     def gen(self, path):
-        dirs=[]
+        dirs = []
         try:
             dirs = os.listdir(path)
         except FileNotFoundError as error:
@@ -211,12 +231,12 @@ class MusicCrawler:
             if os.path.isfile(pth):
                 full_name = os.path.splitext(pth)
                 if full_name[1] == '.mp3':
-                        audio = MP3(pth)
-                        self.__playlst.add_song(Song(audio['TIT2'],
-                                                     audio['TPE1'],
-                                                     audio['TALB'],
-                                                     audio.info.length,
-                                                     pth))
+                    audio = MP3(pth)
+                    self.__playlst.add_song(Song(audio['TIT2'],
+                                                 audio['TPE1'],
+                                                 audio['TALB'],
+                                                 audio.info.length,
+                                                 pth))
             else:
                 self.gen(pth)
 
@@ -226,6 +246,7 @@ class MusicCrawler:
 
 
 class MusicPlayer:
+
     def __init__(self):
         self.__curr_proc = 0
         self.__playing = 0
@@ -245,7 +266,7 @@ class MusicPlayer:
 with ',' between them: """)
             lst_of_paths = inp.split(',')
             self.first_time(lst_of_paths)
-            to_be_saved = [path+'\n' for path in lst_of_paths]
+            to_be_saved = [path + '\n' for path in lst_of_paths]
             fl = open("config", "w")
             fl.writelines(to_be_saved)
             fl.close()
@@ -275,13 +296,14 @@ with ',' between them: """)
                     second = inp.split(' ')[1]
                     if "-all" in second:
                         song = self.__curr_playlist.next_song()
-                        while type(song) is Song:
+                        while isinstance(song, Song):
                             self.__curr_proc = play(song.path())
                             self.__curr_proc.wait(timeout=300)
                             song = self.__curr_playlist.next_song()
                     else:
                         sng_n = int(inp.split(" ")[1] - 1)
-                        self.__playing = self.__curr_playlist.show_songs()[sng_n]
+                        self.__playing = self.__curr_playlist.show_songs()[
+                            sng_n]
                 self.Play()
 
             if inp == "s" and self.__curr_proc:
@@ -290,7 +312,6 @@ with ',' between them: """)
 
             if inp == "test":
                 print(self.__curr_proc.poll())
-
 
             if inp == "n":
                 try:
@@ -353,7 +374,8 @@ want to add and put ',' between them: """)
 
                 lst = inp.split(',')
                 for elem in lst:
-                    playlist_for_adding.add_song(self.__all_songs.show_songs()[int(elem) - 1])
+                    playlist_for_adding.add_song(
+                        self.__all_songs.show_songs()[int(elem) - 1])
                 self.__playlists.append(playlist_for_adding)
 
                 print("All done!")
@@ -362,20 +384,20 @@ want to add and put ',' between them: """)
         self.__playlist.append(playlist)
 
     def first_time(self, lst_of_paths):
-            for path in lst_of_paths:
-                crw = MusicCrawler("All songs", path)
-                self.__curr_playlist.add_songs(crw.generate_playlist())
-            self.__all_songs = self.__curr_playlist
-            self.__playlists.append(self.__all_songs)
-            self.__playing = self.__playlists[0].next_song()
+        for path in lst_of_paths:
+            crw = MusicCrawler("All songs", path)
+            self.__curr_playlist.add_songs(crw.generate_playlist())
+        self.__all_songs = self.__curr_playlist
+        self.__playlists.append(self.__all_songs)
+        self.__playing = self.__playlists[0].next_song()
 
     def Play(self):
-                self.__curr_proc = play(self.__playing.path())
-                print(tabulate([[self.__playing.artist(),
-                                 self.__playing.title(),
-                                 self.__playing.length(seconds=False)]],
-                               headers=["Artist", "Song", "Length"],
-                               tablefmt="grid"))
+        self.__curr_proc = play(self.__playing.path())
+        print(tabulate([[self.__playing.artist(),
+                         self.__playing.title(),
+                         self.__playing.length(seconds=False)]],
+                       headers=["Artist", "Song", "Length"],
+                       tablefmt="grid"))
 
 
 def play(mp3Path):

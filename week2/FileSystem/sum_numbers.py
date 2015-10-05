@@ -1,5 +1,6 @@
 import sys
 
+
 def main():
     name1, name2 = sys.argv
     in_file = open(name2, 'r')

@@ -30,7 +30,7 @@ NUMBERS = ['0', '1', '2', '3',
            '8', '9']
 
 
-def test_for_strong_password(username ,password):
+def test_for_strong_password(username, password):
     to_str = str(password)
     if len(to_str) < 8:
         return {"state": False,
@@ -40,10 +40,10 @@ def test_for_strong_password(username ,password):
                 "reason": "No uppercase letter found!"}
 
     if username in password:
-        return {"state": False, 
+        return {"state": False,
                 "reason": "Username in password!"
                 }
-        
+
     for number in NUMBERS:
         if number in to_str:
             return {"state": True,
@@ -52,16 +52,20 @@ def test_for_strong_password(username ,password):
             "reason": "No number found in password"
             }
 
+
 def hash_them_things(thing):
     hash_object = hashlib.sha512(thing.encode())
     return hash_object.hexdigest()
+
+
 def executor(update_sql, tple):
     cursor.execute(update_sql, tple)
     conn.commit()
-    
+
 
 def check_if_username_exists(username):
     pass
+
 
 def create_clients_table():
     cursor.execute(CREATE_QUERY)
@@ -72,6 +76,7 @@ def change_message(new_message, logged_user):
     executor(UPDATE_SQL, tple)
     logged_user.set_message(new_message)
 
+
 def change_pass(new_pass, logged_user):
     test = test_for_strong_password(logged_user, new_pass)
     if test['state']:
@@ -80,6 +85,8 @@ def change_pass(new_pass, logged_user):
         return True
     else:
         return test
+
+
 def register(username, password):
     test = test_for_strong_password(username, password)
     if test['state']:
@@ -94,10 +101,12 @@ def register(username, password):
                     'state': False}
     else:
         return test
+
+
 def login(username, password):
-    select_query = "SELECT id, username, balance, message FROM clients WHERE username = ? AND password = ? LIMIT 1" 
+    select_query = "SELECT id, username, balance, message FROM clients WHERE username = ? AND password = ? LIMIT 1"
     tple = (username, hash_them_things(password))
-    
+
     cursor.execute(select_query, tple)
     user = cursor.fetchone()
     if(user):

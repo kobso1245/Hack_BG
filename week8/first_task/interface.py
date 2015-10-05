@@ -12,11 +12,11 @@ def make_query(name):
     conn, cursor = make_connection()
 
     if name == 'courses':
-        get_courses_query='''
+        get_courses_query = '''
         SELECT name FROM {}
         '''.format(name)
     else:
-        get_courses_query='''
+        get_courses_query = '''
         SELECT name, github FROM {}
         '''.format(name)
 
@@ -31,14 +31,13 @@ def make_query(name):
 
     return names
 
+
 def get_students():
     return make_query('people')
 
 
 def get_courses():
     return make_query('courses')
-
-
 
 
 def get_all_students_with_their_courses():
@@ -56,6 +55,7 @@ def get_all_students_with_their_courses():
     print(people[0].keys())
     return [(person['name'], person['ime'])for person in people]
 
+
 def get_max_count(ids):
     lst = [(elem, ids.count(elem)) for elem in ids]
     elems = set(lst)
@@ -72,7 +72,7 @@ def get_max_count(ids):
 
 def get_student_name_from_id(conn, cursor, student_id):
     get_student_query = '''
-    SELECT name, github FROM people 
+    SELECT name, github FROM people
     WHERE id = {}
     '''.format(student_id)
 
@@ -80,6 +80,7 @@ def get_student_name_from_id(conn, cursor, student_id):
     conn.commit()
     return data['name'], data['github']
     conn.close()
+
 
 def get_student_with_most_courses():
     conn, cursor = make_connection()
@@ -93,4 +94,3 @@ def get_student_with_most_courses():
 
     max_elem = get_max_count(ids)
     return get_student_name_from_id(conn, cursor, max_elem)
-

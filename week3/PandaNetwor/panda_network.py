@@ -96,7 +96,7 @@ class PandaSocialNetwork:
     def make_friends(self, other1, other2):
         if(other2 in self.__pandas.keys() and
            other1 in self.__pandas[other2]):
-                return
+            return
         if other1 in self.__pandas.keys():
             self.__pandas[other1].append(other2)
         else:
@@ -184,27 +184,28 @@ class PandaSocialNetwork:
         out = open(fle, 'w')
         json.dump(to_be_written, out)
         out.close()
-    
+
     def pandas_details(self):
         pandas = self.get_pandas_list()
         return [panda.get_pandas_info() for panda in pandas]
 
     def load_from(self, fle):
-            in_file = open(fle)
-            input_info = json.load(in_file)
-            for elem in input_info:
-                name = elem.split(' ')
-                if len(name) == 3:
-                    self.add_panda(Panda(name[0], name[1], name[2]))
-                else:
-                    self.make_friends(Panda(name[0], name[1], name[2]),
-                                      Panda(name[3], name[4], name[5]))
-            in_file.close()
+        in_file = open(fle)
+        input_info = json.load(in_file)
+        for elem in input_info:
+            name = elem.split(' ')
+            if len(name) == 3:
+                self.add_panda(Panda(name[0], name[1], name[2]))
+            else:
+                self.make_friends(Panda(name[0], name[1], name[2]),
+                                  Panda(name[3], name[4], name[5]))
+        in_file.close()
 
     def show_pandas(self):
         pandas = self.pandas_details()
         for panda in pandas:
             print(panda)
+
 
 def test():
     gosho = Panda("Ivo", "ivo@mail.bg", "male")
@@ -212,12 +213,12 @@ def test():
     panda_ntw.add_panda(gosho)
     gosho2 = Panda("Ivo2", "iv2o@mail.bg", "male")
     gosho3 = Panda("Ivo3", "iv2o3@mail.bg", "male")
-    
+
     panda_ntw.add_panda(gosho2)
     panda_ntw.add_panda(gosho3)
     print(panda_ntw.get_pandas_list())
     panda_ntw.make_friends(gosho, gosho2)
     panda_ntw.make_friends(gosho3, gosho2)
-    
+
     print(panda_ntw.are_friends(gosho, gosho2))
     print(panda_ntw.connection_level(gosho, gosho3))

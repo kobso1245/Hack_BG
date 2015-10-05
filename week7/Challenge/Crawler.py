@@ -9,11 +9,10 @@ except Exception:
     print('File settings.json not found!')
 
 
-
 def get_links(website):
 
     #webs = website.split('/')
-    #if type(webs) is not type(None) and  len(webs) >=3:
+    # if type(webs) is not type(None) and  len(webs) >=3:
         #website = webs[0] + '//' + webs[2]+'/'
 
     try:
@@ -22,30 +21,32 @@ def get_links(website):
         return []
     bs = BeautifulSoup(req.text)
     all_links = []
-    
 
     for link in bs.find_all('a'):
         curr_link = link.get("href")
-        if type(curr_link) is not type(None) and (('http' in curr_link[:4] and ((curr_link.count('/')<=3 and 'link.php' in curr_link) or curr_link.count('/')<=2)) or (curr_link[:4] == 'link')): 
+        if not isinstance(curr_link, type(None)) and (('http' in curr_link[:4] and ((curr_link.count(
+                '/') <= 3 and 'link.php' in curr_link) or curr_link.count('/') <= 2)) or (curr_link[:4] == 'link')):
             #curr_link = website  + curr_link
-            #all_links.append(curr_link)
+            # all_links.append(curr_link)
             if curr_link[:4] == 'link':
                 webs = website.split('/')
-                if type(webs) is not type(None) and  len(webs) >=3:
-                    website = webs[0] + '//' + webs[2]+'/'
+                if not isinstance(webs, type(None)) and len(webs) >= 3:
+                    website = webs[0] + '//' + webs[2] + '/'
                 curr_link = website + curr_link
             all_links.append(curr_link)
-        #adding all links like http://bla/blabla/blablabla.... as http://bla
-        elif  type(curr_link) is not type(None) and 'http' in curr_link[:4] and curr_link.count('/')>=3 and 'link.php' not in curr_link:
+        # adding all links like http://bla/blabla/blablabla.... as http://bla
+        elif not isinstance(curr_link, type(None)) and 'http' in curr_link[:4] and curr_link.count('/') >= 3 and 'link.php' not in curr_link:
             splitted = curr_link.split('/')
             all_links.append(splitted[0] + '//' + splitted[2])
 
     return all_links
 
+
 def save_file(save_to, hist):
     fle = open(save_to, 'w')
     json.dump(hist.get_dict(), fle)
     fle.close
+
 
 def change_name(name):
     final_name = name
@@ -57,6 +58,7 @@ def change_name(name):
         return 'IIS'
     else:
         return 'other'
+
 
 def make_table(name):
     conn = sqlite3.connect(name)
@@ -87,11 +89,10 @@ def make_table(name):
 def get_histogram(all_links):
     hist = Histogram()
     our_headers = {
-             "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
-             }
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+    }
 
-
-    #connections
+    # connections
     cnt = 0
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
@@ -101,11 +102,11 @@ def get_histogram(all_links):
     VALUES(?, ?)
     '''
 
-    #getting the data if any
+    # getting the data if any
     get_query = '''
     SELECT url FROM websites
     '''
-    
+
     data = cursor.execute(get_query)
     conn.commit()
     rows = data.fetchall()
@@ -145,15 +146,15 @@ def get_histogram(all_links):
     return hist
 
 
-def to_database(link ,database, conn, cursor,to_be_added, cnt):
+def to_database(link, database, conn, cursor, to_be_added, cnt):
     update_query = '''
     INSERT INTO websites(url, server)
     VALUES(?, ?)
     '''
 
     our_headers = {
-             "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
-             }
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+    }
 
     req = requests.head(link,
                         headers=our_headers,
@@ -168,26 +169,53 @@ def to_database(link ,database, conn, cursor,to_be_added, cnt):
         conn.commit()
 
 
-def links(website, links_all, poseteni, database_to_add, to_be_added,cursor, conn,cnt):
+def links(
+        website,
+        links_all,
+        poseteni,
+        database_to_add,
+        to_be_added,
+        cursor,
+        conn,
+        cnt):
     poseteni.add(website)
     curr_links = get_links(website)
     for link in curr_links:
         links_all.add(link)
-    #print(curr_links)
+    # print(curr_links)
     if len(curr_links) == 0:
-        return [] 
+        return []
     else:
         for link in curr_links:
             if link not in poseteni and link not in database_to_add:
                 print(link)
                 try:
-                    links(link, links_all, poseteni, database_to_add,to_be_added,cursor, conn, cnt)
-                    to_database(link, database_to_add, conn, cursor, to_be_added, cnt - 1)
+                    links(
+                        link,
+                        links_all,
+                        poseteni,
+                        database_to_add,
+                        to_be_added,
+                        cursor,
+                        conn,
+                        cnt)
+                    to_database(
+                        link,
+                        database_to_add,
+                        conn,
+                        cursor,
+                        to_be_added,
+                        cnt - 1)
 
                 except Exception:
-                   #add to database 
-                    to_database(link, database_to_add, conn, cursor, to_be_added, cnt - 1)
-
+                   # add to database
+                    to_database(
+                        link,
+                        database_to_add,
+                        conn,
+                        cursor,
+                        to_be_added,
+                        cnt - 1)
 
 
 def craw(website, save_to):
@@ -195,8 +223,16 @@ def craw(website, save_to):
     all_links = set()
     poseteni = set()
     to_be_added = []
-    links(website, all_links, poseteni, in_database, to_be_added,cursor, conn, 10)
+    links(
+        website,
+        all_links,
+        poseteni,
+        in_database,
+        to_be_added,
+        cursor,
+        conn,
+        10)
     #all_links = get_links(website)
-    #print(all_links)
+    # print(all_links)
     #hist = get_histogram(all_links)
     #save_file(save_to, hist)

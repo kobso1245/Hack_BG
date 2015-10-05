@@ -1,5 +1,6 @@
 import sys
 
+
 def main():
     name1, *name2 = sys.argv
     for curr_file in name2:

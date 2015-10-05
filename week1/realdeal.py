@@ -2,7 +2,7 @@ from copy import deepcopy
 
 
 def sum_of_divisors(n):
-    return sum([x for x in range(1, n+1) if n % x == 0])
+    return sum([x for x in range(1, n + 1) if n % x == 0])
 
 
 def is_prime(n):
@@ -13,7 +13,7 @@ def is_prime(n):
 
 def prime_number_of_divisors(n):
     return is_prime((sum([1 for x in
-                    [p for p in range(1, n+1) if n % p == 0]])))
+                          [p for p in range(1, n + 1) if n % p == 0]])))
 
 
 def constains_digit(number, digit):
@@ -32,7 +32,7 @@ def is_number_ballanced(n):
         p = length // 2 + 1
     else:
         p = length // 2
-    return (sum([int(x) for x in str(n)[:length//2]]) ==
+    return (sum([int(x) for x in str(n)[:length // 2]]) ==
             sum([int(x) for x in str(n)[p:]]))
 
 
@@ -43,10 +43,10 @@ def count_substrings(haystack, needle):
 def zero_insert(n):
     result = ""
     tmp = str(n)
-    for i in range(0, len(tmp)-1):
+    for i in range(0, len(tmp) - 1):
         if int(tmp[i]) == int(tmp[i + 1]):
             result = result + tmp[i] + '0'
-        elif int(tmp[i]) + int(tmp[i+1]) == 10:
+        elif int(tmp[i]) + int(tmp[i + 1]) == 10:
             result = result + tmp[i] + '0'
         else:
             result += tmp[i]
@@ -63,7 +63,7 @@ def bomb_da_shet(m, pos):
     for row in range(len(tmp)):
         for col in range(len(tmp[0])):
             if (abs(row - pos[0]) <= 1 and abs(col - pos[1]) <= 1
-                and (row != pos[0] or col != pos[1])):
+                    and (row != pos[0] or col != pos[1])):
                 if tmp[row][col] - tmp[pos[0]][pos[1]] < 0:
                     tmp[row][col] = 0
                 else:
@@ -81,4 +81,3 @@ def matrix_bombing_plan(m):
 
 def reps(input_items):
     return [x for x in input_items if input_items.count(x) != 1]
-

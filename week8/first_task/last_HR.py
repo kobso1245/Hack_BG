@@ -13,10 +13,11 @@ def get_all_courses_names(jsoned):
     tuples = []
     for student in jsoned:
         if len(student['courses']) == 0:
-            tuples.append((student['name'],student['github'], ''))
+            tuples.append((student['name'], student['github'], ''))
         else:
             for course in student['courses']:
-                tuples.append((student['name'],student['github'], course['name']))
+                tuples.append(
+                    (student['name'], student['github'], course['name']))
     return tuples
 
 
@@ -31,12 +32,12 @@ def get_courses_names(tuples):
     return courses
 
 
-
 def get_people_names(tuples):
     people = []
     for person in tuples:
         people.append((person[0], person[1]))
     return people
+
 
 def get_all_data(name):
     tuples = get_data_and_return_tuples(name)
@@ -80,9 +81,9 @@ def add_info_to_tables(people, courses):
 
     lst_courses = ["('" + course + "')" for course in courses.keys()]
     add_courses_query += ",".join(lst_courses)
-    
 
-    lst_people = ["('" + person[0] +  "'"  + ',' + "'"  + str(person[1])  + "')" for person in people]
+    lst_people = ["('" + person[0] + "'" + ',' + "'" +
+                  str(person[1]) + "')" for person in people]
     splitted_people = []
     while len(lst_people) >= 500:
         splitted_people.extend(lst_people[:500])
@@ -102,6 +103,7 @@ def add_info_to_tables(people, courses):
 
     return conn, cursor
 
+
 def get_from_file(filename):
     fle = open(filename)
     data = json.load(fle)
@@ -113,15 +115,15 @@ def get_from_file(filename):
     course_id = 0
 
     for person in data:
-        people.append((person['name'], person['github'],person_id, []))
+        people.append((person['name'], person['github'], person_id, []))
 
         for course in person['courses']:
             if course['name'] in courses.keys():
-                people[person_id-1][3].append(courses[course['name']])
+                people[person_id - 1][3].append(courses[course['name']])
             else:
                 course_id += 1
                 courses[course['name']] = course_id
-                people[person_id-1][3].append(course_id + 1)
+                people[person_id - 1][3].append(course_id + 1)
         person_id += 1
     return people, courses
 
@@ -144,10 +146,12 @@ def make_third_table(conn, cursor, people):
     lst_people = []
     for person in people:
         if len(person[3]) == 0:
-            lst_people.append("('" + str(person[2]) +  "'"  + ',' + str(-1)  + ")")
+            lst_people.append(
+                "('" + str(person[2]) + "'" + ',' + str(-1) + ")")
         else:
             for con in person[3]:
-                lst_people.append("('" + str(person[2]) +  "'"  + ','  + str(con)  + ")")
+                lst_people.append(
+                    "('" + str(person[2]) + "'" + ',' + str(con) + ")")
     splitted_people = []
     while len(lst_people) >= 500:
         splitted_people.extend(lst_people[:500])
@@ -159,5 +163,3 @@ def make_third_table(conn, cursor, people):
     for query in final_ver_query:
         cursor.execute(query)
     conn.commit()
-
-

@@ -18,7 +18,7 @@ cursor = conn.cursor()
 cursor.execute(create_table_query)
 
 
-#insert query
+# insert query
 
 insert_into_table_query = """
 INSERT INTO users(name, monthly_salary, year_bonus, position)

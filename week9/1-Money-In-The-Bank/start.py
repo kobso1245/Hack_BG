@@ -7,8 +7,7 @@ from money_and_email import connect, withdraw_money, get_balance, get_email, set
 from settings import DATABASE_NAME
 from querries import WITHDRAW_MONEY, GET_MONEY_AMMOUNT, CHANGE_PASSWORD, SET_EMAIL, GET_EMAIL_QUERY
 import getpass as gp
-from sending_settings import RECEIVER_EMAIL ,SENDER_EMAIL, SENDER_PASSWORD, SERVER, PORT
-
+from sending_settings import RECEIVER_EMAIL, SENDER_EMAIL, SENDER_PASSWORD, SERVER, PORT
 
 
 def wrapped_reset_password(logged_user):
@@ -17,13 +16,15 @@ def wrapped_reset_password(logged_user):
                           sql_manager.hash_them_things(new_pass))
     send_reset_password(get_email(logged_user.get_username()), new_pass)
 
+
 def wrapped_withdraw(logged_user):
-    ammount =  float(input("Please select ammount of money you would like to withdraw: "))
+    ammount = float(
+        input("Please select ammount of money you would like to withdraw: "))
     balance = get_balance(logged_user.get_username())
     if ammount > balance:
         print("Can't withdraw more than you have...")
     else:
-        withdraw_money(logged_user.get_username(), balance-ammount)
+        withdraw_money(logged_user.get_username(), balance - ammount)
         print("Money successfully withdrawn!")
 
 
@@ -37,8 +38,6 @@ def wrapped_deposit(logged_user):
         print("Money deposited successfully!")
 
 
-
-
 def print_username_password():
     username = input("Enter your username: ")
     password = gp.getpass(prompt="Enter your password: ")
@@ -46,15 +45,18 @@ def print_username_password():
             "password": password
             }
 
+
 def print_help():
     print("login - for logging in!")
     print("register - for creating new account!")
     print("exit - for closing program!")
 
+
 def print_info():
     print("You are: " + logged_user.get_username())
     print("Your id is: " + str(logged_user.get_id()))
     print("Your balance is:" + str(logged_user.get_balance()) + '$')
+
 
 def print_all_commands():
     print("info - for showing account info")
@@ -74,7 +76,7 @@ def main_menu():
             username = result['username']
             password = result['password']
             inp = sql_manager.register(username, password)
-            if inp == True:
+            if inp:
                 print("Registration Successfull")
             else:
                 print(inp['reason'])
@@ -98,9 +100,6 @@ def main_menu():
             print("Not a valid command")
 
 
-
-
-
 def send_reset_password(receiver, new_password):
     TO = receiver
     SUBJECT = "New password"
@@ -114,20 +113,23 @@ def send_reset_password(receiver, new_password):
 
 def generate_new_password():
     n = random.randint(15, 20)
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(n))
+    return ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase +
+            string.digits) for _ in range(n))
+
 
 def logged_menu(logged_user):
     print("Welcome you are logged in as: " + logged_user.get_username())
     while True:
         command = input("Logged>>")
 
-
         if command == 'info':
             print_info()
         elif command == 'changepass':
             new_pass = input("Enter your new password: ")
             inp = sql_manager.change_pass(new_pass, logged_user)
-            if inp == True:
+            if inp:
                 print("Password changed sucessfully!!")
             else:
                 print(inp['reason'])
@@ -141,7 +143,10 @@ def logged_menu(logged_user):
             print(show_email(logged_user.get_username()))
 
         elif command == 'show-balance':
-            print("Current balance is: {}".format(get_balance(logged_user.get_username())))
+            print(
+                "Current balance is: {}".format(
+                    get_balance(
+                        logged_user.get_username())))
 
         elif command == 'withdraw':
             wrapped_withdraw(logged_user)
@@ -160,6 +165,7 @@ def logged_menu(logged_user):
 
         elif command == 'help':
             print_all_commands()
+
 
 def main():
     sql_manager.create_clients_table()
